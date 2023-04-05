@@ -30,7 +30,11 @@
         <li>ex@example.com</li>
       </ul>
     </div>
+    <div class="notification">
+    <p class="rights">©️ 2021 Yanki. All rights reserved</p>
+  </div>
     </footer>
+    
 
 </template>
 
@@ -76,5 +80,13 @@
 .footer-column a:hover {
   color: #e31b6d;
 }
+.notification {
+  margin-top: 8px;
 
+  margin: 0 auto;
+}
+.rights {
+  font-size: 12px;
+  text-align: center;
+}
 </style>

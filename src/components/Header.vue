@@ -4,11 +4,12 @@
         <div class="navbar-container">
           <div class="navbar-menu">
             <a href="#" class="navbar-menu-item">NEW</a>
-            <a href="#" class="navbar-menu-item">КАТАЛОГ</a>
+            <router-link to="catalog" class="navbar-menu-item">КАТАЛОГ</router-link>
             <a href="#" class="navbar-menu-item">О НАС</a>
           </div>
           <div class="navbar-logo">
-            <img src="@/assets/icons/logo.svg" alt="Logo" />
+            <!-- <img src="@/assets/icons/logo.svg" alt="Logo" /> -->
+            <router-link to="/" class="navbar-menu-item"><img src="@/assets/icons/logo.svg" alt="Home" /> </router-link>
           </div>
           <div class="navbar-language">
             <a href="#" class="navbar-language-item">RU</a>
@@ -21,9 +22,15 @@
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/wish.svg">
             </a>
-            <a href="#" class="navbar-icon">
+            <div>
+            <a href="#" class="navbar-icon" @click="showModal = true">
               <img src="@/assets/icons/user.svg">
             </a>
+            
+            <Modal v-if="showModal" @close="showModal = false">
+              <register-form />
+            </Modal>
+          </div>
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/cart.svg">
             </a>
@@ -33,6 +40,25 @@
     </div>
     </header>
 </template>
+
+
+<script>
+import Modal from '@/components/Modal.vue'
+import RegisterForm from '@/components/RegisterForm.vue'
+
+export default {
+  components: {
+    Modal,
+    RegisterForm,
+  },
+  data() {
+    return {
+      showModal: false,
+    }
+  },
+}
+</script>
+
 
 <style lang="scss">
 .header { 
