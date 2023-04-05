@@ -22,15 +22,7 @@
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/wish.svg">
             </a>
-            <div>
-            <a href="#" class="navbar-icon" @click="showModal = true">
-              <img src="@/assets/icons/user.svg">
-            </a>
-            
-            <Modal v-if="showModal" @close="showModal = false">
-              <register-form />
-            </Modal>
-          </div>
+            <router-link class="navbar-icon" to="/login"><img src="@/assets/icons/user.svg"></router-link>
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/cart.svg">
             </a>
@@ -43,20 +35,6 @@
 
 
 <script>
-import Modal from '@/components/Modal.vue'
-import RegisterForm from '@/components/RegisterForm.vue'
-
-export default {
-  components: {
-    Modal,
-    RegisterForm,
-  },
-  data() {
-    return {
-      showModal: false,
-    }
-  },
-}
 </script>
 
 

@@ -1,11 +1,17 @@
 <template>
+    <Header />
     <div class="page-register">
-
         <div class="reg-form">
             <div class="title">
-                <h1>Вход</h1>
+                <h1>Регистрация</h1>
 
                 <form @submit.prevent="submitForm">
+                    <div class="username">
+                
+                        <div class="username-input">
+                            <input type="text" class="input" v-model="username" placeholder="Ваше имя*">
+                        </div>
+                    </div>
 
                     <div class="email">
                      
@@ -21,6 +27,12 @@
                         </div>
                     </div>
 
+                    <div class="password">
+               
+                        <div class="password-input">
+                            <input type="password" class="input" v-model="password2" placeholder="Повторите пароль*">
+                        </div>
+                    </div>
                    
                     <div class="errors" v-if="errors.length">
                         <p v-for="error in errors" v-bind:key="error">{{ error }}</p>     
@@ -28,52 +40,75 @@
 
                     <div class="button">
                         <div class="btn">
-                            <button class="reg-btn">Войти</button>
+                            <button class="reg-btn">Зарегистрироваться</button>
                         </div>
                     </div>  
+                    <hr>
+                    <p>Или нажмите <router-link to="/login">здесь,</router-link> чтобы <strong>войти</strong></p>
                 </form>
             </div>
         </div>
-        <div class="switch-form">
+
     </div>
-    </div>
+    <Footer />
 </template>
+
 
 <script>
 import axios from 'axios'
-
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
 export default {
-    name: 'LogInForm',
+    name: 'RegisterView',
     data() {
         return {
+            username: '',
             email: '',
             password: '',
-            errors: []
+            password2: '',
+            errors: [],
+            showModal: false 
         }
     },
-
+    components: {
+        Header,
+        Footer
+    },
     methods: {
-        async submitForm() {
-            axios.defaults.headers.common["Authorization"] = ""
-            localStorage.removeItem("token")
+        submitForm() {
+            this.errors = []
 
-            const formData = {
-                email: this.email,
-                password: this.password
+            if (this.username === '') {
+                this.errors.push('Поле пользователя пустое!')
+
             }
 
-        await axios
-            .post("/api/v1/token/login/", formData)
-            .then(response => {
-                const token = response.data.auth_token
-                localStorage.setItem("token", token)
-                            
-                axios.defaults.headers.common["Authorization"] = "Token " + token
-                const toPath = this.$route.query.to || '/'
-                this.$router.push(toPath)
-            })
-            .catch(error => {
+            if (this.password !== this.password2) {
+                this.errors.push('Пароли не совпадают!')  
+            }
+
+            if (!this.errors.length) {
+                const formData = {
+                    username: this.username,
+                    email: this.email,
+                    password: this.password
+                }
+
+                axios
+                    .post("/api/v1/users/", formData)
+                    .then(response => {
+                        // toast ({
+                        //     message: 'Аккаунт создан, войдите!',
+                        //     type: 'is-success',
+                        //     dismissible: true,
+                        //     pauseOnHover: true,
+                        //     duration: 2000,
+                        //     position: 'bottom-right',
+                        // })
+                        this.$router.push('/')
+                    })
+                    .catch(error => {
                         if (error.response) {
                             for (const property in error.response.data) {
                                 this.errors.push(`${property}: ${error.response.data[property]}`)
@@ -88,20 +123,17 @@ export default {
                         }
                     
                     })
-
-
+            }
         }
     }
-
 }
 </script>
-
 <style lang="scss" scoped>
 .page-register {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
 }
 
 .reg-form {
@@ -117,19 +149,19 @@ export default {
   margin-bottom: 20px;
 }
 
-
+.username,
 .email,
 .password {
   margin-bottom: 10px;
 }
 
-
+.username label,
 .email label,
 .password label {
   font-weight: bold;
 }
 
-
+.username-input,
 .email-input,
 .password-input {
   display: flex;
@@ -137,7 +169,7 @@ export default {
   height: 50px;
 }
 
-
+.username-input input,
 .email-input input,
 .password-input input {
   flex: 1;

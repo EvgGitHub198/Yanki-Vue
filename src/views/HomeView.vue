@@ -43,8 +43,6 @@ import Footer from '@/components/Footer.vue'
 import { Swiper, SwiperSlide } from "swiper/vue";
 import 'swiper/swiper.css';
 import 'swiper/swiper-bundle.css';
-
-
 import axios from 'axios';
 
 export default {
