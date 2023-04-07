@@ -59,6 +59,7 @@ import axios from 'axios'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 
+
 export default {
     name: 'RegisterView',
     data() {
@@ -67,58 +68,62 @@ export default {
             email: '',
             password: '',
             password2: '',
-            errors: [],
-            showModal: false 
+            errors: []
         }
     },
-    components: {
+    mounted() {
+        if (this.$store.getters.isAuthenticated) {
+            this.$router.push('/')
+        }
+    },
+    components:{
         Header,
         Footer
     },
     methods: {
         submitForm() {
             this.errors = []
-
             if (this.username === '') {
                 this.errors.push('Поле пользователя пустое!')
-
             }
-
             if (this.password !== this.password2) {
                 this.errors.push('Пароли не совпадают!')  
             }
-
             if (!this.errors.length) {
                 const formData = {
                     username: this.username,
                     email: this.email,
                     password: this.password
                 }
-
                 axios
                     .post("/api/v1/users/", formData)
                     .then(response => {
-                        // toast ({
-                        //     message: 'Аккаунт создан, войдите!',
-                        //     type: 'is-success',
-                        //     dismissible: true,
-                        //     pauseOnHover: true,
-                        //     duration: 2000,
-                        //     position: 'bottom-right',
-                        // })
-                        this.$router.push('/')
+                        const loginData = {
+                            email: formData.email,
+                            password: formData.password
+                        }
+                        axios
+                            .post("/api/v1/token/login/", loginData)
+                            .then(response => {
+                                const token = response.data.auth_token
+                                localStorage.setItem('token', token)
+                                this.$store.dispatch('login', token)
+                                this.$router.push('/')
+                            })
+                            .catch(error => {
+                                this.errors.push('Невозможно выполнить вход после регистрации.')
+                                console.log(error)
+                            })
                     })
                     .catch(error => {
                         if (error.response) {
                             for (const property in error.response.data) {
                                 this.errors.push(`${property}: ${error.response.data[property]}`)
                             }
-
                             console.log(JSON.stringify(error.response.data))
                         }
                         else if (error.message) {
                             this.errors.push('Что-то пошло не так. Повторите!')
-
                             console.log(JSON.stringify(error))
                         }
                     
@@ -128,6 +133,9 @@ export default {
     }
 }
 </script>
+
+
+
 <style lang="scss" scoped>
 .page-register {
   display: flex;

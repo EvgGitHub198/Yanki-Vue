@@ -1,32 +1,23 @@
 <template>
        <Header />
     <div class="page-register">
-
         <div class="reg-form">
             <div class="title">
                 <h1>Вход</h1>
-
                 <form @submit.prevent="submitForm">
-
-                    <div class="email">
-                     
+                    <div class="email">                   
                         <div class="email-input">
-                            <input type="text" class="input" v-model="email" placeholder="Ваш e-mail*">
+                            <input type="text" class="input" v-model="email"  required placeholder="Ваш e-mail*">
                         </div>
                     </div>
-
-                    <div class="password">
-                       
+                    <div class="password">                      
                         <div class="password-input">
-                            <input type="password" class="input" v-model="password" placeholder="Ваш пароль*">
+                            <input type="password" class="input" v-model="password" required placeholder="Ваш пароль*">
                         </div>
-                    </div>
-
-                   
+                    </div>       
                     <div class="errors" v-if="errors.length">
-                        <p v-for="error in errors" v-bind:key="error">{{ error }}</p>     
+                        <p v-for="(error, index) in errors" v-bind:key="error">{{ error }}</p>     
                     </div>
-
                     <div class="button">
                         <div class="btn">
                             <button class="reg-btn">Войти</button>
@@ -37,16 +28,16 @@
                 </form>
             </div>
         </div>
-
-
     </div>
     <Footer />
 </template>
+
 
 <script>
 import axios from 'axios'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+
 
 export default {
     name: 'LogInView',
@@ -57,6 +48,9 @@ export default {
             errors: []
         }
     },
+    mounted() {
+        document.title = 'Yanki | LogIn'
+    },
     components:{
         Header,
         Footer
@@ -65,19 +59,18 @@ export default {
         async submitForm() {
             axios.defaults.headers.common["Authorization"] = ""
             localStorage.removeItem("token")
-
             const formData = {
                 email: this.email,
                 password: this.password
             }
-
         await axios
             .post("/api/v1/token/login/", formData)
             .then(response => {
                 const token = response.data.auth_token
-                localStorage.setItem("token", token)
-                            
+                this.$store.commit('setToken', token)
+                
                 axios.defaults.headers.common["Authorization"] = "Token " + token
+                localStorage.setItem("token", token)
                 const toPath = this.$route.query.to || '/'
                 this.$router.push(toPath)
             })
@@ -86,21 +79,16 @@ export default {
                             for (const property in error.response.data) {
                                 this.errors.push(`${property}: ${error.response.data[property]}`)
                             }
-
                             console.log(JSON.stringify(error.response.data))
                         }
                         else if (error.message) {
                             this.errors.push('Что-то пошло не так. Повторите!')
-
                             console.log(JSON.stringify(error))
                         }
                     
                     })
-
-
         }
     }
-
 }
 </script>
 

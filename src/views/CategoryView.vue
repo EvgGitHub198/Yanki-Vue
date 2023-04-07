@@ -11,70 +11,84 @@
           </ul>
         </div>
         <div class="products">
-          <h2>Товары</h2>
-          <div class="product-list">
-            <div class="product" v-for="product in products" :key="product.id">
-              <router-link :to="'/category/' + product.slug">
-                <img :src="product.image" :alt="product.name" />
-                <div class="product-details">
-                  <h3>{{ product.name }}</h3>
-                  <p>{{ product.price }} руб.</p>
-                  <p>{{ product.sizes }}</p>
-                </div>
-              </router-link>
+      <h1>{{ category_name }}</h1>
+      <div class="product-list">
+        <div v-for="product in products" :key="product.id">
+          <router-link :to="'/product/' + product.slug">
+            <div class="product-card">
+              <div class="product-image">
+                <img :src="'http://127.0.0.1:8000'+product.main_image" :alt="product.name" />
+              </div>
+              <div class="product-details">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-price">{{ product.price }}</div>
+                <div class="product-sizes">{{ product.sizes.join(", ") }}</div>
+              </div>
             </div>
-          </div>
+          </router-link>
         </div>
       </div>
-      <Footer />
+    </div>
+    </div>
+    <Footer />
     </div>
   </template>
   
   <script>
-  import Header from '@/components/Header.vue'
-  import Footer from '@/components/Footer.vue'
-  import axios from 'axios';
-  
+  import Header from "@/components/Header.vue";
+  import Footer from "@/components/Footer.vue";
+  import axios from "axios";
   export default {
-    name: 'CatalogView',
-    components: {
-      Header,
-      Footer,
-    },
+    name: "CategoryView",
     data() {
       return {
+        category_name: "",
         categories: [],
         products: [],
       };
     },
+    components: {
+      Header,
+      Footer,
+    },
     mounted() {
-      axios
-        .get('api/v1/categories/')
-        .then((response) => {
-          this.categories = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-  
-      axios
-        .get('api/v1/products/')
-        .then((response) => {
-          this.products = response.data.map((product) => ({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.main_image,
-            slug: product.slug,
-            sizes: product.sizes
-          }));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      this.loadCategory();
+      this.loadCategories();
+    },
+    methods: {
+      loadCategory() {
+        const category_slug = this.$route.params.category_slug;
+        axios
+          .get(`/api/v1/products/${category_slug}/`)
+          .then((response) => {
+            this.category_name = response.data.name;
+            this.products = response.data.products;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      },
+      loadCategories() {
+  axios
+    .get('/api/v1/categories/')
+    .then(response => {
+      this.categories = response.data;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+    },
+    watch: {
+      "$route.params.category_slug": function() {
+        this.loadCategory();
+      },
     },
   };
   </script>
+  
+
   
   <style lang="scss" scoped>
   .container {

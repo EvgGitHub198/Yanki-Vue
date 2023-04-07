@@ -8,7 +8,6 @@
             <a href="#" class="navbar-menu-item">О НАС</a>
           </div>
           <div class="navbar-logo">
-            <!-- <img src="@/assets/icons/logo.svg" alt="Logo" /> -->
             <router-link to="/" class="navbar-menu-item"><img src="@/assets/icons/logo.svg" alt="Home" /> </router-link>
           </div>
           <div class="navbar-language">
@@ -22,7 +21,13 @@
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/wish.svg">
             </a>
-            <router-link class="navbar-icon" to="/login"><img src="@/assets/icons/user.svg"></router-link>
+            <template v-if="$store.state.isAuthenticated">
+                <router-link to="/account" class="navbar-icon"><img src="@/assets/icons/user.svg"></router-link>
+              </template>
+
+              <template v-else>
+                <router-link to="/login" class="navbar-icon"><img src="@/assets/icons/user.svg"></router-link>
+              </template>
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/cart.svg">
             </a>
@@ -35,7 +40,10 @@
 
 
 <script>
+
+
 </script>
+
 
 
 <style lang="scss">

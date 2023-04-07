@@ -3,7 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import CatalogView from '../views/CatalogView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
-
+import AccountView from '../views/AccountView.vue'
+import CategoryView from '../views/CategoryView.vue'
 
 const routes = [
   {
@@ -26,6 +27,19 @@ const routes = [
     name: 'register',
     component: RegisterView
   },
+  {
+    path: '/account',
+    name: 'account',
+    component: AccountView,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: '/catalog/:category_slug',
+    name: 'category',
+    component: CategoryView
+  }
 
 
 
