@@ -31,7 +31,7 @@
       </ul>
     </div>
     <div class="notification">
-    <p class="rights">©️ 2021 Yanki. All rights reserved</p>
+    <p class="rights">©️ 2023 Yanki. All rights reserved</p>
   </div>
     </footer>
     

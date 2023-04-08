@@ -3,9 +3,10 @@
     <div class="navbar">
         <div class="navbar-container">
           <div class="navbar-menu">
-            <a href="#" class="navbar-menu-item">NEW</a>
-            <router-link to="catalog" class="navbar-menu-item">КАТАЛОГ</router-link>
-            <a href="#" class="navbar-menu-item">О НАС</a>
+            
+            <router-link to="/catalog/new" class="navbar-menu-item">NEW</router-link>
+            <router-link to="/catalog" class="navbar-menu-item">КАТАЛОГ</router-link>
+            <router-link to="/about" class="navbar-menu-item">О НАС</router-link>
           </div>
           <div class="navbar-logo">
             <router-link to="/" class="navbar-menu-item"><img src="@/assets/icons/logo.svg" alt="Home" /> </router-link>

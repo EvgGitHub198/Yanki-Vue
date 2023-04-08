@@ -5,6 +5,8 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import AccountView from '../views/AccountView.vue'
 import CategoryView from '../views/CategoryView.vue'
+import ProductView from '../views/ProductView.vue'
+
 
 const routes = [
   {
@@ -39,6 +41,11 @@ const routes = [
     path: '/catalog/:category_slug',
     name: 'category',
     component: CategoryView
+  },
+  {
+    path: '/catalog/:category_slug/:product_slug',
+    name: 'product',
+    component: ProductView
   }
 
 

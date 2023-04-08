@@ -5,7 +5,7 @@
       <div class="new-collection">
         <h1>Новая коллекция</h1>
         <hr>
-        <p>Смотреть новинки ></p>
+        <router-link to="/catalog/new">Смотреть новинки ></router-link>
       </div>
     </div>
 
@@ -18,11 +18,14 @@
     @slideChange="onSlideChange">
     
       <swiper-slide v-for="category in categories" :key="category.id">
-        <div class="category-card">
-            <img src="@/assets/img/girl.png" alt="">
+        <router-link :to="'/catalog/' + category.slug">
+          <div class="category-card">
+            <img :src="category.category_image" alt="">
             <div class="category-name">{{ category.name }}</div>
           </div>
+        </router-link>
       </swiper-slide>
+
   </swiper>
 </div>
     
@@ -53,9 +56,19 @@ export default {
     Swiper,
     SwiperSlide,
   },
+  mounted() {
+    axios.get('/api/v1/categories/')
+      .then(response => {
+        this.categories = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
   data() {
     return {
-      categories: []
+      categories: [],
+
     }
   },
   methods: {
@@ -65,16 +78,8 @@ export default {
     onSlideChange() {
       console.log("slide change");
     },
+
   },
-  mounted() {
-    axios.get('/api/v1/categories/')
-      .then(response => {
-        this.categories = response.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
 }
 </script>
 
@@ -104,9 +109,8 @@ export default {
 
 .category-card {
   /* Стили для каждой карточки категории */
-  width: 273px;
+  width: 275px;
   height: 450px;
-
   position: relative;
 }
 
