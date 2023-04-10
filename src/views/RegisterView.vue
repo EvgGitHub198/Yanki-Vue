@@ -1,5 +1,5 @@
 <template>
-    <Header />
+
     <div class="page-register">
         <div class="reg-form">
             <div class="title">
@@ -50,14 +50,12 @@
         </div>
 
     </div>
-    <Footer />
+
 </template>
 
 
 <script>
 import axios from 'axios'
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
 
 
 export default {
@@ -76,10 +74,7 @@ export default {
             this.$router.push('/')
         }
     },
-    components:{
-        Header,
-        Footer
-    },
+
     methods: {
         submitForm() {
             this.errors = []

@@ -1,13 +1,13 @@
 <template>
   <div class="home">
-    <Header />
     <div class="hero">
       <div class="new-collection">
         <h1>Новая коллекция</h1>
         <hr>
-        <router-link to="/catalog/new">Смотреть новинки ></router-link>
+        <router-link class="look-new" to="/catalog/new">СМОТРЕТЬ НОВИНКИ <img class="arrow-right" src="@/assets/icons/arrow-right.svg"></router-link>
       </div>
     </div>
+    <div class="list-categories">
 
     <div class="swiper-container">
       <h2 align="left">Категории</h2>
@@ -16,18 +16,17 @@
     :space-between="15"
     @swiper="onSwiper"
     @slideChange="onSlideChange">
-    
       <swiper-slide v-for="category in categories" :key="category.id">
         <router-link :to="'/catalog/' + category.slug">
           <div class="category-card">
-            <img :src="category.category_image" alt="">
+            <img :src="category.category_image">
             <div class="category-name">{{ category.name }}</div>
           </div>
         </router-link>
       </swiper-slide>
-
   </swiper>
-</div>
+    </div>
+  </div>
     
     <div class="subscribe">
       <h2>Узнайте  первым о новинках</h2>
@@ -35,14 +34,13 @@
       <button class="sub-btn">ПОДПИСАТЬСЯ</button>
       <p>Нажимая на кнопку «Подписаться», я соглашаюсь на обработку моих персональных данных и ознакомлен(а) с условиями конфиденциальности.</p>
     </div>
-    <Footer />
+
   </div>
 
 </template>
 
 <script>
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+
 import { Swiper, SwiperSlide } from "swiper/vue";
 import 'swiper/swiper.css';
 import 'swiper/swiper-bundle.css';
@@ -51,8 +49,6 @@ import axios from 'axios';
 export default {
   name: 'HomeView',
   components: {
-    Header,
-    Footer,
     Swiper,
     SwiperSlide,
   },
@@ -90,12 +86,11 @@ export default {
 .hero {
   /* Стили для блока с фотографией на фоне */
   height: calc(100vh + 30px); /* высота блока будет равна 100vh минус высота шапки */
+  background-image: url('@/assets/img/home-background.png');
 }
 .home {
-  background-image: url('@/assets/img/home-background.png');
   background-size: cover;
   background-position: center;
-  height: 100vh;
   margin: 0; 
 }
 .categories {
@@ -104,8 +99,6 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
 }
-
-
 
 .category-card {
   /* Стили для каждой карточки категории */
@@ -161,5 +154,21 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
+}
+.look-new{
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+
+}
+
+.look-new:hover{
+  color: red;
+  font-size: 17px;
+  transition-duration: 0.25s;
+}
+.arrow-right{
+  height: 13px;
+  width: 15px;
 }
 </style>

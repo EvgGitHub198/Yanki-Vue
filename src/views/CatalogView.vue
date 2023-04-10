@@ -1,6 +1,6 @@
 <template>
     <div class="catalog">
-      <Header />
+
       <div class="container">
         <div class="categories">
           <h2 align="left">Каталог</h2>
@@ -26,21 +26,17 @@
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   </template>
   
   <script>
-  import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+
 import axios from 'axios';
   
   export default {
     name: 'CatalogView',
-    components: {
-      Header,
-      Footer,
-    },
+
     data() {
       return {
         categories: [],

@@ -1,6 +1,6 @@
 <template>
     <div class="catalog">
-      <Header />
+   
       <div class="container">
         <div class="categories">
           <h2 align="left">Каталог</h2>
@@ -30,13 +30,11 @@
       </div>
     </div>
     </div>
-    <Footer />
+
     </div>
   </template>
   
   <script>
-  import Header from "@/components/Header.vue";
-  import Footer from "@/components/Footer.vue";
   import axios from "axios";
   import { BACKEND_URL } from '@/config.js';
 
@@ -51,11 +49,6 @@
         BACKEND_URL: BACKEND_URL
       }
       };
-    },
-    components: {
-      Header,
-      Footer,
-
     },
     mounted() {
       this.loadCategory();

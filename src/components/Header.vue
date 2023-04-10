@@ -9,7 +9,7 @@
             <router-link to="/about" class="navbar-menu-item">О НАС</router-link>
           </div>
           <div class="navbar-logo">
-            <router-link to="/" class="navbar-menu-item"><img src="@/assets/icons/logo.svg" alt="Home" /> </router-link>
+            <router-link to="/" class="navbar-menu-item"><img src="@/assets/icons/logo.svg" alt="Home"></router-link>
           </div>
           <div class="navbar-language">
             <a href="#" class="navbar-language-item">RU</a>
@@ -29,9 +29,7 @@
               <template v-else>
                 <router-link to="/login" class="navbar-icon"><img src="@/assets/icons/user.svg"></router-link>
               </template>
-            <a href="#" class="navbar-icon">
-              <img src="@/assets/icons/cart.svg">
-            </a>
+              <router-link to="/cart" class="navbar-menu-item"><img src="@/assets/icons/cart.svg"></router-link>
           </div>
         </div>
 
@@ -128,5 +126,8 @@
 .navbar-language-item:hover {
   color: #e31b6d;
 }
-
+.about-us {
+  text-decoration: none;
+  color: black;
+}
 </style>

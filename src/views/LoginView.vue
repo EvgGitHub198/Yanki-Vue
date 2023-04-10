@@ -35,9 +35,6 @@
 
 <script>
 import axios from 'axios'
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
-
 
 export default {
     name: 'LogInView',
@@ -51,10 +48,7 @@ export default {
     mounted() {
         document.title = 'Yanki | LogIn'
     },
-    components:{
-        Header,
-        Footer
-    },
+
     methods: {
         async submitForm() {
             axios.defaults.headers.common["Authorization"] = ""
