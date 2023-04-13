@@ -1,6 +1,5 @@
 <template>
     <div class="catalog">
-
       <div class="container">
         <div class="categories">
           <h2 align="left">Каталог</h2>
@@ -45,7 +44,7 @@ import axios from 'axios';
     },
     mounted() {
       axios
-        .get('api/v1/categories/')
+        .get('api/v1/categories')
         .then((response) => {
           this.categories = response.data;
         })

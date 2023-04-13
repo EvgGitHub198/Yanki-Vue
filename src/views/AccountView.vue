@@ -27,14 +27,18 @@
     .then(response => {
       localStorage.removeItem('token')
       localStorage.removeItem('username')
-      localStorage.removeItem('userid')
-      localStorage.removeItem('isAdmin') // удаление значения статуса администратора из локального хранилища
+      localStorage.removeItem('userId')
+      localStorage.removeItem('isAdmin') 
       this.$store.commit('removeToken')
       this.$router.push('/')
-        })
+      setTimeout(function() {
+        location.reload();
+      }, 300);
+
+    })
     .catch(error => {
       console.log(error)
-        })
+    })
     },
 checkIsAdmin() {
   const isAdmin = localStorage.getItem('isAdmin')

@@ -1,166 +1,158 @@
 <template>
-    <div class="product-page">
-      <div class="images-container">
-        <div class="extra-images">
-        <div class="image-column" v-for="(image, index) in images.slice(1)" :key="index">
-            <img :src="config.BACKEND_URL + image" width="100" height="100" @click="changeMainImage(index + 1)" />
-        </div>
-        </div>
-        <div class="main-image">
-          <div class="image-controls">
-            <button @click="changeMainImagePrev" class="prev-image-button">&#8249;</button>
-            <img :src="config.BACKEND_URL + currentImage" width="450" height="540" v-if="currentImage" />
-            <button @click="changeMainImageNext" class="next-image-button">&#8250;</button>
-          </div>
+  
+  <div class="product-page">
+    <div class="images-container">
+      <div class="extra-images">
+      <div class="image-column" v-for="(image, index) in images.slice(1)" :key="index">
+          <img :src="config.BACKEND_URL + image" width="100" height="100" @click="changeMainImage(index + 1)" />
+      </div>
+      </div>
+      <div class="main-image">
+        <div class="image-controls">
+          <button @click="changeMainImagePrev" class="prev-image-button">&#8249;</button>
+          <img :src="config.BACKEND_URL + currentImage" width="450" height="540" v-if="currentImage" />
+          <button @click="changeMainImageNext" class="next-image-button">&#8250;</button>
         </div>
       </div>
-      <div class="product-info">
-        <h2 class="product-name">{{ product.name }}</h2>
-        <h2 class="product-price">{{ product.price }} руб.</h2>
-        <div class="size-select">
-        <select v-model="selectedSize" required>
-          <option disabled value="undefined">Выберите размер</option>
-          <option v-for="size in product.sizes" :value="size">{{ size }}</option>
-        </select>
-      </div>
+    </div>
+    <div class="product-info">
+      <h2 class="product-name">{{ product.name }}</h2>
+      <h2 class="product-price">{{ product.price }} руб.</h2>
+      <div class="size-select">
+      <select v-model="selectedSize" required>
+        <option disabled value="undefined">Выберите размер</option>
+        <option v-for="size in product.sizes" :value="size">{{ size }}</option>
+      </select>
+    </div>
 
-        <div class="product-buttons">
-          <button class="button1" @click="addToCart">В корзину</button>
-          <button class="button2"><img src="@/assets/icons/in-wish-list.svg"> В избранное</button>
-      </div>
-      <div class="product-description">
-    <p class="product-description" @click="showDescription = !showDescription">
-      Подробности 
-      <span class="arrow" :class="{ 'arrow-down': !showDescription, 'arrow-up': showDescription }"></span>
-    </p>
-    <pre class="product-description" v-if="showDescription">{{ product.description }}</pre>
+
+      <div class="product-buttons">
+        <button class="button1" @click="addToCart">В корзину</button>
+        <button class="button2" @click="addToWish"><img src="@/assets/icons/in-wish-list.svg"> В избранное</button>
+    </div>
+    <div class="product-description">
+  <p class="product-description" @click="showDescription = !showDescription">
+    Подробности
+    <span class="arrow" :class="{ 'arrow-down': !showDescription, 'arrow-up': showDescription }"></span>
+  </p>
+  <pre class="product-description" v-if="showDescription">{{ product.description }}</pre>
+</div>
+
+
+
+
   </div>
-    </div>
-    </div>
-  </template>
+  </div>
+</template>
+
+
 
 
 <script>
+
+
 import axios from 'axios';
 import { BACKEND_URL } from '@/config.js';
-import { mapState } from 'vuex';
+
 
 export default{
-  name: 'ProductView',
+name: 'ProductView',
 
-  data() {
-    return {
-      product: {},
-      quantity: 1,
-      showDescription: true,
-      config: {
-        BACKEND_URL: BACKEND_URL
-      },
-      currentIndex: 0,
-      selectedSize: undefined,
-      props: {
-        product: Object,
-      },
-    };
+
+data() {
+  return {
+  product: {},
+  quantity: 1,
+  showDescription: true,
+  config: {
+      BACKEND_URL: BACKEND_URL
   },
-
-  computed: {
-    
-    images() {
-      if (this.product.extra_images) {
-        return [this.product.main_image, ...this.product.extra_images.map(image => image.image)];
-      } else {
-        return [this.product.main_image];
-      }
-    },
-    currentImage() {
-      return this.images[this.currentIndex];
-    },
+  currentIndex: 0,
+  props: {
+    product: Object,
+},
+  selectedSize: undefined
+  };
+ 
+},
+computed: {
+  images() {
+  if (this.product.extra_images) {
+      return [this.product.main_image, ...this.product.extra_images.map(image => image.image)];
+  } else {
+      return [this.product.main_image];
+  }
   },
-
-  mounted() {
-    this.getProduct();
+  currentImage() {
+  return this.images[this.currentIndex];
   },
-
-  methods: {
-    async getProduct() {
-      const category_slug = this.$route.params.category_slug;
-      const product_slug = this.$route.params.product_slug;
-      await axios
-        .get(`api/v1/products/${category_slug}/${product_slug}`)
-        .then(response => {
-          this.product = response.data;
-          document.title = 'Yanki | ' + this.product.name;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-
-    async addToCart() {
-      if (isNaN(this.quantity) || this.quantity < 1) {
-        this.quantity = 1;
-      }
-
-      // check if product with selected size is already in the cart
-      let cartItems = [];
-const storedCartItems = localStorage.getItem('cartItems');
-
-if (storedCartItems) {
-  cartItems = JSON.parse(storedCartItems);
-}
-
-
-
-
-      const existingCartItemIndex = cartItems.findIndex(
-        i => i.product.id === this.product.id && i.size === this.selectedSize
-      );
-
-      if (existingCartItemIndex > -1) {
-        // increment quantity if product with selected size already in cart
-        cartItems[existingCartItemIndex].quantity += this.quantity;
-      } else {
-        // add new item if product with selected size not in cart
-        const newItem = {
-          product: this.product,
-          size: this.selectedSize,
-          quantity: this.quantity
-        };
-        cartItems.push(newItem);
-      }
-      localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    },
-
-
-    changeMainImage(index) {
-      this.currentIndex = index;
-    },
-
-    changeMainImagePrev() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
-      } else {
-        this.currentIndex = this.images.length - 1;
-      }
-    },
-
-    changeMainImageNext() {
-      if (this.currentIndex < this.images.length - 1) {
-        this.currentIndex++;
-      } else {
-        this.currentIndex = 0;
-      }
-    },
-  },
-
-  watch: {
-    currentIndex() {
-      this.$nextTick(() => {
-        window.dispatchEvent(new Event('resize'));
+},
+mounted() {
+  this.getProduct();
+},
+methods: {
+  async getProduct() {
+  const category_slug = this.$route.params.category_slug;
+  const product_slug = this.$route.params.product_slug;
+  await axios
+      .get(`api/v1/products/${category_slug}/${product_slug}`)
+      .then(response => {
+      this.product = response.data;
+      document.title = 'Yanki | ' + this.product.name;
+      })
+      .catch(error => {
+      console.log(error);
       });
-    },
   },
+  addToCart() {
+ if (!this.selectedSize || !this.product.id) {
+   return;
+ }
+ const cartItem = {
+   quantity: 1,
+   size: this.selectedSize,
+   product: this.product,
+ };
+ const cartItems = this.$store.state.cart.items;
+ const existingItem = cartItems.find(item => item.size === cartItem.size && item.product.id === cartItem.product.id);
+ if (existingItem) {
+   existingItem.quantity++;
+ } else {
+   cartItems.push(cartItem);
+ }
+ this.$store.commit('updateCart', cartItems);
+},
+addToWish() {
+  const wish = {
+    name: this.product.name,
+    price: this.product.price,
+    image: this.product.main_image,
+  };
+  let wishes = JSON.parse(localStorage.getItem('wishes')) || [];
+  wishes.push(wish);
+  localStorage.setItem('wishes', JSON.stringify(wishes));
+},
+
+
+
+  changeMainImage(index) {
+  this.currentIndex = index;
+  },
+  changeMainImagePrev() {
+  if (this.currentIndex > 0) {
+      this.currentIndex--;
+  } else {
+      this.currentIndex = this.images.length - 1;
+  }
+  },
+  changeMainImageNext() {
+  if (this.currentIndex < this.images.length - 1) {
+      this.currentIndex++;
+  } else {
+      this.currentIndex = 0;
+  }
+  },
+},
 };
 </script>
 

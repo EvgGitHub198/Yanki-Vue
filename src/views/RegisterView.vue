@@ -1,43 +1,32 @@
 <template>
-
     <div class="page-register">
         <div class="reg-form">
             <div class="title">
                 <h1>Регистрация</h1>
-
                 <form @submit.prevent="submitForm">
-                    <div class="username">
-                
+                    <div class="username">              
                         <div class="username-input">
                             <input type="text" class="input" v-model="username" placeholder="Ваше имя*">
                         </div>
                     </div>
-
-                    <div class="email">
-                     
+                    <div class="email">                
                         <div class="email-input">
                             <input type="text" class="input" v-model="email" placeholder="Ваш e-mail*">
                         </div>
                     </div>
-
-                    <div class="password">
-                       
+                    <div class="password">                      
                         <div class="password-input">
                             <input type="password" class="input" v-model="password" placeholder="Ваш пароль*">
                         </div>
                     </div>
-
-                    <div class="password">
-               
+                    <div class="password">         
                         <div class="password-input">
                             <input type="password" class="input" v-model="password2" placeholder="Повторите пароль*">
                         </div>
-                    </div>
-                   
+                    </div>              
                     <div class="errors" v-if="errors.length">
                         <p v-for="error in errors" v-bind:key="error">{{ error }}</p>     
                     </div>
-
                     <div class="button">
                         <div class="btn">
                             <button class="reg-btn">Зарегистрироваться</button>
@@ -56,6 +45,7 @@
 
 <script>
 import axios from 'axios'
+
 
 
 export default {
@@ -86,6 +76,7 @@ export default {
             }
             if (!this.errors.length) {
                 const formData = {
+         
                     username: this.username,
                     email: this.email,
                     password: this.password

@@ -19,13 +19,10 @@
             <a href="#" class="navbar-icon">
               <img src="@/assets/icons/magnifier.svg">
             </a>
-            <a href="#" class="navbar-icon">
-              <img src="@/assets/icons/wish.svg">
-            </a>
+            <router-link to="/wish" class="navbar-icon"><img src="@/assets/icons/wish.svg"></router-link>
             <template v-if="$store.state.isAuthenticated">
                 <router-link to="/account" class="navbar-icon"><img src="@/assets/icons/user.svg"></router-link>
               </template>
-
               <template v-else>
                 <router-link to="/login" class="navbar-icon"><img src="@/assets/icons/user.svg"></router-link>
               </template>
