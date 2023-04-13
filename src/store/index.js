@@ -7,7 +7,7 @@ state: {
    },
  isAuthenticated: false,
  token: '',
- wishes: []
+ wishes: JSON.parse(localStorage.getItem('wishes')) || [],
 },
 getters: {
   wishes: state => state.wishes
@@ -54,13 +54,14 @@ initializeStore(state) {
    state.cart.items[index].quantity--;
    localStorage.setItem('cart', JSON.stringify(state.cart));
  },
- addToWish(state, item) {
-  state.wishes.push(item);
+ addToWishList(state, wishItem) {
+  state.wishes.push(wishItem);
+  localStorage.setItem('wishes', JSON.stringify(state.wishes));
 },
-removeFromWishes(state, index) {
+removeFromWishList(state, index) {
   state.wishes.splice(index, 1);
+  localStorage.setItem('wishes', JSON.stringify(state.wishes));
 }
-
 
 },
 actions: {
@@ -68,12 +69,7 @@ actions: {
      localStorage.setItem('token', token)
      commit('setToken', token)
  },
- addToWishes({ commit }, item) {
-  commit('addToWishes', item);
-},
-removeFromWishes({ commit }, item) {
-  commit('removeFromWishes', item);
-}
+
 },
 modules: {
 }

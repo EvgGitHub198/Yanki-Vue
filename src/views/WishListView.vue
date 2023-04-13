@@ -1,14 +1,20 @@
 <template>
     <div class="wish-page">
       <h2 align="left">Избранное</h2>
-      <div v-if="wishes.length">
-        <div v-for="(wish, index) in wishes" :key="index" class="wish-card">
-          <img :src="'http://127.0.0.1:8000'+wish.image" class="wish-image" />
-          <div class="wish-details">
-            <h2>{{ wish.name }}</h2>
-            <p>{{ wish.price }} руб.</p>
-          </div>
-          <button @click="removeFromWishes(index)">Удалить</button>
+      <div v-if="wishes.length" class="wish-card-container">
+        <div v-for="(wish, index) in wishes" :key="wish.id" class="wish-card">
+          <router-link class="product-link" :to="'catalog'+wish.url">
+            <div class="wish-image-container">
+            <img class="wish-image" :src="'http://127.0.0.1:8000'+wish.main_image" />
+            <a class="delete-image" @click.prevent="removeFromWish(index)">
+                <img src="@/assets/icons/wish-delete.svg" alt="Delete">
+            </a>
+            </div>
+            <div class="wish-details">
+              <p class="wish-name">{{ wish.name }}</p>
+              <p class="wish-price">{{ wish.price }} руб.</p>
+            </div>
+          </router-link>
         </div>
       </div>
       <div v-else>
@@ -18,52 +24,79 @@
   </template>
   
   <script>
-  import { mapActions } from 'vuex';
-
   export default {
     name: 'WishListView',
     computed: {
-        wishes() {
-            const storedWishes = JSON.parse(localStorage.getItem('wishes')) || [];
-            return storedWishes;
-        }
+      wishes() {
+        return this.$store.getters.wishes;
+      },
     },
     methods: {
-        removeFromWishes(item) {
-    const index = this.wishes.indexOf(item);
-    if (index !== -1) {
-      this.$store.dispatch('removeFromWishes', index);
-    }
-  },
-
+        removeFromWish(index) {
+    this.$store.commit('removeFromWishList', index);
+  }
     },
   };
   </script>
   
-  <style lang="scss">
+  <style lang="scss" scoped>
   .wish-page {
     margin-top: 80px;
-    min-height: 100vh;
     margin-left: 10%;
     margin-right: 10%;
-    width: 100%;
+
+  }
+  
+  .wish-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: -10px;
   }
   
   .wish-card {
+
+    margin: 10px;
     display: flex;
-    align-items: center;
-    margin: 20px 0;
+    flex-direction: column;
   }
   
   .wish-image {
-    width: 100px;
-    height: 100px;
-    margin-right: 20px;
+    width: 350px;
+    height: 400px;
   }
   
+.wish-image-container {
+  position: relative;
+}
+.delete-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+.delete-image :hover{
+    color: red;
+}
+.product-link{
+    text-decoration: none;
+    color: #000;
+}
+  
   .wish-details {
-    display: flex;
-    flex-direction: column;
+    margin: 10px 0;
+  }
+  
+  .wish-name {
+
+    font-weight: bold;
+    margin: 5px 0;
+  }
+  
+  .wish-price {
+    margin: 5px 0;
   }
   </style>
   

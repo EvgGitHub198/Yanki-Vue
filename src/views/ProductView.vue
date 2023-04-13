@@ -1,5 +1,4 @@
 <template>
-  
   <div class="product-page">
     <div class="images-container">
       <div class="extra-images">
@@ -24,11 +23,9 @@
         <option v-for="size in product.sizes" :value="size">{{ size }}</option>
       </select>
     </div>
-
-
       <div class="product-buttons">
         <button class="button1" @click="addToCart">В корзину</button>
-        <button class="button2" @click="addToWish"><img src="@/assets/icons/in-wish-list.svg"> В избранное</button>
+        <button class="button2" @click="addToWish"><img src="@/assets/icons/in-wish-list.svg"> {{ wishButtonText }}</button>
     </div>
     <div class="product-description">
   <p class="product-description" @click="showDescription = !showDescription">
@@ -37,16 +34,9 @@
   </p>
   <pre class="product-description" v-if="showDescription">{{ product.description }}</pre>
 </div>
-
-
-
-
   </div>
   </div>
 </template>
-
-
-
 
 <script>
 
@@ -86,6 +76,10 @@ computed: {
   currentImage() {
   return this.images[this.currentIndex];
   },
+  wishButtonText() {
+    const index = this.$store.state.wishes.findIndex(item => item.id === this.product.id);
+    return index > -1 ? 'Удалить' : 'В избранное';
+  },
 },
 mounted() {
   this.getProduct();
@@ -105,35 +99,41 @@ methods: {
       });
   },
   addToCart() {
- if (!this.selectedSize || !this.product.id) {
-   return;
- }
- const cartItem = {
-   quantity: 1,
-   size: this.selectedSize,
-   product: this.product,
- };
- const cartItems = this.$store.state.cart.items;
- const existingItem = cartItems.find(item => item.size === cartItem.size && item.product.id === cartItem.product.id);
- if (existingItem) {
-   existingItem.quantity++;
- } else {
-   cartItems.push(cartItem);
- }
- this.$store.commit('updateCart', cartItems);
-},
-addToWish() {
-  const wish = {
+  if (!this.selectedSize || !this.product.id) {
+    return;
+  }
+  const cartItem = {
+    quantity: 1,
+    size: this.selectedSize,
+    product: this.product,
+  };
+  const cartItems = this.$store.state.cart.items;
+  const existingItem = cartItems.find(item => item.size === cartItem.size && item.product.id === cartItem.product.id);
+  if (existingItem) {
+    existingItem.quantity++;
+  } else {
+    cartItems.push(cartItem);
+  }
+  this.$store.commit('updateCart', cartItems);
+  },
+  addToWish() {
+  if (!this.product.id) {
+    return;
+  }
+  const wishItem = {
+    id: this.product.id,
     name: this.product.name,
     price: this.product.price,
-    image: this.product.main_image,
+    main_image: this.product.main_image,
+    url: this.product.get_absolute_url,
   };
-  let wishes = JSON.parse(localStorage.getItem('wishes')) || [];
-  wishes.push(wish);
-  localStorage.setItem('wishes', JSON.stringify(wishes));
+  const index = this.$store.state.wishes.findIndex(item => item.id === wishItem.id);
+  if (index > -1) {
+    this.$store.commit('removeFromWishList', index);
+  } else {
+    this.$store.commit('addToWishList', wishItem);
+  }
 },
-
-
 
   changeMainImage(index) {
   this.currentIndex = index;
