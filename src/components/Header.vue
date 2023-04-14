@@ -16,9 +16,7 @@
             <a href="#" class="navbar-language-item">UAH</a>
           </div>
           <div class="navbar-icons">
-            <a href="#" class="navbar-icon">
-              <img src="@/assets/icons/magnifier.svg">
-            </a>
+            <router-link to="/search" class="navbar-icon"><img src="@/assets/icons/magnifier.svg"></router-link>
             <router-link to="/wish" class="navbar-icon"><img src="@/assets/icons/wish.svg"></router-link>
             <template v-if="$store.state.isAuthenticated">
                 <router-link to="/account" class="navbar-icon"><img src="@/assets/icons/user.svg"></router-link>

@@ -1,6 +1,5 @@
 <template>
     <div class="catalog">
-   
       <div class="container">
         <div class="categories">
           <h2 align="left">Каталог</h2>
@@ -153,9 +152,7 @@
 
 .product-details {
   margin-top: 10px;
-
 }
-
 .product-details h3 {
   margin: 0;
   font-size: 18px;
@@ -164,8 +161,6 @@
 .product-details p {
   margin: 2px;
   font-size: 16px;
-
-  
 }
 .sizes {
   color: #888;

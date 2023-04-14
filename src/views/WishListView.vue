@@ -5,7 +5,7 @@
         <div v-for="(wish, index) in wishes" :key="wish.id" class="wish-card">
           <router-link class="product-link" :to="'catalog'+wish.url">
             <div class="wish-image-container">
-            <img class="wish-image" :src="'http://127.0.0.1:8000'+wish.main_image" />
+            <img class="wish-image" :src="config.BACKEND_URL+wish.main_image" />
             <a class="delete-image" @click.prevent="removeFromWish(index)">
                 <img src="@/assets/icons/wish-delete.svg" alt="Delete">
             </a>
@@ -18,13 +18,21 @@
         </div>
       </div>
       <div v-else>
-        <p>Нет добавленных продуктов в избранное.</p>
+        <h3>Нет добавленных продуктов в избранное</h3>
       </div>
     </div>
   </template>
   
   <script>
+  import { BACKEND_URL } from '@/config.js';
   export default {
+    data() {
+        return {
+            config: {
+             BACKEND_URL: BACKEND_URL
+            }
+        }
+    },
     name: 'WishListView',
     computed: {
       wishes() {
@@ -44,38 +52,48 @@
     margin-top: 80px;
     margin-left: 10%;
     margin-right: 10%;
-
+    min-height: 100vh;
+    margin-bottom: 20px;
   }
   
   .wish-card-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    margin: -10px;
-  }
-  
-  .wish-card {
+    align-items: flex-start;
+    margin: -5px;
+    height: auto;
+}
 
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-  }
+.wish-card {
+  width: calc(33.33% - 10px);
+  margin: 5px;
+  box-sizing: border-box;
+  position: relative; 
+  
+}
+
   
   .wish-image {
-    width: 350px;
-    height: 400px;
+  box-sizing: content-box;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  margin: 10px;
   }
-  
 .wish-image-container {
   position: relative;
 }
+
 .delete-image {
   position: absolute;
   top: 0;
   right: 0;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   object-fit: cover;
+  z-index: 1;
+  margin-top: 10px;
+  margin-right: 20px;
+
 }
 .delete-image :hover{
     color: red;
