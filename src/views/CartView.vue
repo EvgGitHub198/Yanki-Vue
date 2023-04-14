@@ -33,9 +33,8 @@
       К оплате: <strong>{{ totalCartPrice }} руб.</strong>
     </div>
     <h2 align="left">Оформление заказа</h2>
-    <!-- блок checkout -->
-<div class="checkout">
 
+<div class="checkout">
   <div class="left-info">
     <div class="personal-info">
   <h3 align="left">Персональные данные</h3>
@@ -55,23 +54,23 @@
       <h3 align="left">Способ доставки</h3>
       <h4 align="left">по России:</h4>
       <div class="selection">
-        <input class="radio" type="radio" id="pickup" name="shipping" value="pickup" checked>
+        <input class="radio" type="radio" id="pickup" name="shipping" value="pickup" checked v-model="selectedShipping">
         <label for="pickup">Самовывоз - вул. Большая Васильковская 14 (м. Льва Толстого)</label>
       </div>
       <div class="selection">
-        <input class="radio" type="radio" id="mail" name="shipping" value="mail">
+        <input class="radio" type="radio" id="mail" name="shipping" value="mail" v-model="selectedShipping">
         <label for="mail">Новая почта</label>
       </div>
     </div>
-    <h4 align="left">Адрес доставки:</h4>
-    <div class="form-group">
-    <div class="grid-inputs">
-      <input class="city-grid" type="text" id="name" placeholder="Город*">
-      <input type="tel" id="phone" placeholder="Отделение почты*">
+    <div class="if-deliviry" v-if="showAddress">
+      <h4 align="left">Адрес доставки:</h4>
+        <div class="form-group">
+        <div class="grid-inputs">
+        <input class="city-grid" type="text" id="name" placeholder="Город*">
+        <input type="tel" id="phone" placeholder="Отделение почты*">
+        </div>
+      </div>
     </div>
-  </div>
-
-
     <div class="payment-method">
       <h3 align="left">Тип оплаты</h3>
       <div class="selection">
@@ -82,11 +81,13 @@
   </div>
   <div class="right-info">
     <div class="shipping-info">
-      <p><router-link to="/login">Войти в личный кабинет</router-link></p>
-        <p><router-link to="/delivery">Условия доставки</router-link></p>
-        <p><router-link to="/return">Условия обмена и возврата</router-link></p>
-        <p><router-link to="/payment">Информаия об оплате</router-link></p>
-        <table>
+      <div class="links">
+      <p><router-link class="login-link"  to="/login">Войти в личный кабинет</router-link></p>
+        <p><router-link class="delivery-links" to="/delivery">УСЛОВИЯ ДОСТАВКИ</router-link></p>
+        <p><router-link class="delivery-links" to="/return">УСЛОВИЯ ОБМЕНА И ВОЗВРАТА</router-link></p>
+        <p><router-link class="delivery-links" to="/payment">ИНФОРМАЦИЯ ОБ ОПЛАТЕ</router-link></p>
+      </div>
+        <table class="checkout-table" >
         <thead>
             <tr>
                 <th colspan="2"></th>
@@ -94,23 +95,19 @@
         </thead>
         <tbody>
             <tr>
-                <td>Доставка:</td>
-                <td>по тарифам перевозчика</td>
+                <td class="table-info-left-column">ДОСТАВКА:</td>
+                <td class="table-info-right-column"><strong>По тарифам перевозчика</strong></td>
             </tr>
             <tr>
-              <td>ИТОГО:</td>
-              <td>{{totalCartPrice}} руб.</td>
+              <td class="table-info-left-column">ИТОГО:</td>
+              <td class="table-info-right-column"><strong>{{totalCartPrice}} руб.</strong></td>
             </tr>
         </tbody>
       </table>
-
-      <button class="checkout-btn">Оформить заказ</button>
+      <button class="checkout-btn" @click="checkout">ОФОРМИТЬ ЗАКАЗ</button>
     </div>
   </div>
-
 </div>
-
-
   </div>
 </template>
 <script>
@@ -119,9 +116,18 @@ import { BACKEND_URL } from '@/config.js';
 export default {
   data() {
         return {
+            selectedShipping: 'pickup',
+            showAddress: false,
             config: {
              BACKEND_URL: BACKEND_URL
-            }
+            },
+            card: {},
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+            zipcode: '',
+       
         }
     },
   computed: {
@@ -134,6 +140,7 @@ export default {
 },
 mounted() {
   this.$store.commit('initializeStore');
+  this.showAddress = this.selectedShipping === 'mail';
 },
 methods: {
 removeItem(index) {
@@ -145,12 +152,49 @@ incrementItem(index) {
 decrementItem(index) {
     this.$store.commit('decrementItem', index);
   },
-}
+},
+watch: {
+  selectedShipping() {
+    if (this.selectedShipping === 'mail') {
+      this.showAddress = true;
+    } else {
+      this.showAddress = false;
+    }
+  },
+},
+
 };
 </script>
 
 
 <style lang="scss" scoped>
+.login-link{
+  color: #E0BEA2;
+  text-decoration: underline;
+}
+.delivery-links{
+  text-decoration: underline;
+  color: #000;
+}
+
+.links, .table-info-left-column {
+  text-align: left;
+}
+.table-info-right-column{
+  text-align: right;
+}
+.checkout-table{
+  border: none;
+  width: 10%;
+  white-space: nowrap;
+  margin-left: -6px;
+
+
+}
+.checkout-table td,
+.checkout-table th {
+  border: none;
+}
 .selection{
   margin-bottom: 5px;
   display: flex;
@@ -191,7 +235,8 @@ decrementItem(index) {
 .right-info {
   width: 100%;
   display: flex;
-  margin-left: 10px;
+  margin-left: 30px;
+
 
 }
 
@@ -204,13 +249,14 @@ decrementItem(index) {
 
 
 .checkout-btn {
-margin-top: 20px;
-padding: 10px 20px;
-background-color: #0066cc;
-color: #fff;
-border: none;
-border-radius: 4px;
-cursor: pointer;
+  float: left;
+  margin-top: 20px;
+  background-color: #E0BEA2;
+  color: #fff;
+  border: none;
+  width: 300px;
+  height: 50px;
+  cursor: pointer;
 }
 
 .checkout-btn:hover {
@@ -231,7 +277,7 @@ textarea {
 width: 350px;
 height: 50px;
 padding: 7px;
-border: 1px solid #000;
+border: 1px solid #252525;
 box-sizing: border-box;
 margin-bottom: 5px;
 font-size: 16px;

@@ -1,3 +1,205 @@
+<script>
+import axios from 'axios'
+export default {
+    name: 'CartView',
+    data() {
+        return {
+            cart: {
+                items: []
+            },
+            card: {},
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+            zipcode: '',
+            errors: []
+        }
+    },
+	cartItems() {
+    return this.$store.state.cart.items;
+  	},
+
+    methods: {
+		removeItem(index) {
+		this.$store.commit('removeItem', index);
+		},
+		incrementItem(index) {
+			this.$store.commit('incrementItem', index);
+		},
+		decrementItem(index) {
+			this.$store.commit('decrementItem', index);
+		},
+		},
+        checkout() {
+            this.errors = []
+            if (this.first_name === '') {
+                this.errors.push('The first name field is missing!')
+            }
+            if (this.last_name === '') {
+                this.errors.push('The last name field is missing!')
+            }
+            if (this.email === '') {
+                this.errors.push('The email field is missing!')
+            }
+            if (this.phone === '') {
+                this.errors.push('The phone field is missing!')
+            }
+            if (!this.errors.length) {
+          
+                this.Check()
+            }
+        },
+        async Check(token) {
+            const items = []
+            for (let i = 0; i < this.$store.state.cart.items.length; i++) {
+                const item = this.$store.state.cart.items[i]
+                const obj = {
+                    product: item.product.id,
+                    quantity: item.quantity,
+                    price: item.product.price * item.quantity
+                }
+                items.push(obj)
+            }
+            const data = {
+
+                'name': this.name,
+                'email': this.email,
+				'phone': this.phone,
+                'address': this.address,
+                'zipcode': this.zipcode,
+                'items': items,
+
+            }
+            await axios
+                .post('/api/v1/checkout/', data)
+                .then(response => {
+                    this.$store.commit('clearCart')
+                    this.$router.push('/cart/success')
+                })
+                .catch(error => {
+                    this.errors.push('Something went wrong. Please try again')
+                    console.log(error)
+                })
+                
+        }
+    },
+	computed: {
+  cartItems() {
+    return this.$store.state.cart.items;
+  },
+  totalCartPrice() {
+      return this.cartItems.reduce((acc, item) => acc + item.quantity * item.product.price, 0);
+    }
+},
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
