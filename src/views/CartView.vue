@@ -40,13 +40,13 @@
   <h3 align="left">Персональные данные</h3>
   <div class="form-group">
     <div class="name-email-grid">
-      <input type="text" id="name" placeholder="Ваше ФИО*">
-      <input type="email" id="email" placeholder="Ваша почта*">
+      <input type="text" id="name" placeholder="Ваше ФИО*"  v-model="name">
+      <input type="email" id="email" placeholder="Ваша почта*" v-model="email">
     </div>
   </div>
   <div class="form-group">
     <div class="phone-grid">
-      <input type="tel" id="phone" placeholder="Ваш номер телефона*">
+      <input type="tel" id="phone" placeholder="Ваш номер телефона*" v-model="phone">
     </div>
   </div>
 </div>
@@ -66,8 +66,8 @@
       <h4 align="left">Адрес доставки:</h4>
         <div class="form-group">
         <div class="grid-inputs">
-        <input class="city-grid" type="text" id="name" placeholder="Город*">
-        <input type="tel" id="phone" placeholder="Отделение почты*">
+        <input class="city-grid" type="text" id="name" placeholder="Город*" v-model="address">
+        <input type="tel" placeholder="Отделение почты*" v-model="zipcode">
         </div>
       </div>
     </div>
@@ -82,7 +82,16 @@
   <div class="right-info">
     <div class="shipping-info">
       <div class="links">
-      <p><router-link class="login-link"  to="/login">Войти в личный кабинет</router-link></p>
+
+
+        <template v-if="$store.state.isAuthenticated">
+          <p><router-link class="login-link"  to="/account">Личный кабинет</router-link></p>
+        </template>
+
+        <template v-else>
+          <p><router-link class="login-link"  to="/login">Войти в личный кабинет</router-link></p>
+        </template>
+
         <p><router-link class="delivery-links" to="/delivery">УСЛОВИЯ ДОСТАВКИ</router-link></p>
         <p><router-link class="delivery-links" to="/return">УСЛОВИЯ ОБМЕНА И ВОЗВРАТА</router-link></p>
         <p><router-link class="delivery-links" to="/payment">ИНФОРМАЦИЯ ОБ ОПЛАТЕ</router-link></p>
@@ -104,13 +113,14 @@
             </tr>
         </tbody>
       </table>
-      <button class="checkout-btn" @click="checkout">ОФОРМИТЬ ЗАКАЗ</button>
+      <button class="checkout-btn" @click="submitOrder()">ОФОРМИТЬ ЗАКАЗ</button>
     </div>
   </div>
 </div>
   </div>
 </template>
 <script>
+import axios from 'axios';
 import { BACKEND_URL } from '@/config.js';
 
 export default {
@@ -121,13 +131,12 @@ export default {
             config: {
              BACKEND_URL: BACKEND_URL
             },
-            card: {},
             name: '',
             email: '',
             phone: '',
             address: '',
             zipcode: '',
-       
+            errors: [],
         }
     },
   computed: {
@@ -152,6 +161,60 @@ incrementItem(index) {
 decrementItem(index) {
     this.$store.commit('decrementItem', index);
   },
+  submitOrder() {
+
+            this.errors = []
+            if (this.name === '') {
+                this.errors.push('The name field is missing!')
+            }
+            if (this.email === '') {
+                this.errors.push('The email field is missing!')
+            }
+            if (this.phone === '') {
+                this.errors.push('The phone field is missing!')
+            }
+            if (!this.errors.length) {
+                this.Checkout()
+            }
+            else {
+              console.log(this.errors)
+            }
+
+        },
+        async Checkout() {
+            const items = []
+            for (let i = 0; i < this.$store.state.cart.items.length; i++) {
+                const item = this.$store.state.cart.items[i]
+                const obj = {
+                    product: item.product.id,
+                    quantity: item.quantity,
+                    size: item.size,
+                    price: item.product.price * item.quantity
+                }
+                items.push(obj)
+            }
+            const data = {
+
+                'name': this.name,
+                'email': this.email,
+				        'phone': this.phone,
+                'address': this.address,
+                'zipcode': this.zipcode,
+                'items': items,
+
+            }
+            await axios
+                .post('/api/v1/checkout/', data)
+                .then(response => {
+                    this.$store.commit('clearCart')
+                    this.$router.push('/cart/success')
+                })
+                .catch(error => {
+                    this.errors.push('Something went wrong. Please try again')
+                    console.log(error)
+                })
+                
+        }
 },
 watch: {
   selectedShipping() {

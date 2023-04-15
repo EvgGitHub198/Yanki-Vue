@@ -162,38 +162,37 @@ methods: {
 
 .images-container {
   margin-left: 80px;
-display: flex;
-flex-direction: row;
-float: left;
+  display: flex;
+  flex-direction: row;
+  float: left;
+  }
+  
+.extra-images img{
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.image-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.image-column {
+  margin-right: 10px;
+  margin-bottom: 5px;
 }
   
-  .extra-images img{
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
-  
-  .image-row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-  }
-  
-  .image-column {
-    margin-right: 10px;
-    margin-bottom: 5px;
-  }
-  
-  .product-page {
-    margin-top: 100px;
-    height: 150vh;
-    
-  }
+.product-page {
+  margin-top: 100px;
+  min-height: 100vh;
+}
 
-  .image-controls {
+.image-controls {
   position: relative;
   display: flex;
   flex-direction: row;
@@ -252,11 +251,11 @@ float: left;
 }
 select {
   appearance: none;
-  padding-right: 20px; /* добавляем небольшой отступ для стрелочки */
-  background-image: url('@/assets/icons/arrow-down.svg'); /* здесь задаем свой собственный фон для стрелочки */
+  padding-right: 20px; 
+  background-image: url('@/assets/icons/arrow-down.svg'); 
   background-repeat: no-repeat;
-  background-position: right center; /* задаем положение стрелочки */
-  background-position-x: calc(100% - 20px); /* сдвигаем стрелочку на 20 пикселей влево */
+  background-position: right center; 
+  background-position-x: calc(100% - 20px); 
 }
 
 
@@ -299,16 +298,16 @@ p.product-description:hover {
   display: inline-block;
   width: 10px;
   height: 10px;
-  margin-left: 5px; /* добавляем небольшой отступ перед стрелочкой */
-  background-image: url('@/assets/icons/arrow-down.svg'); /* здесь задаем свой собственный фон для стрелочки */
+  margin-left: 5px; 
+  background-image: url('@/assets/icons/arrow-down.svg'); 
   background-repeat: no-repeat;
-  background-position: center; /* выравниваем изображение по центру элемента */
-  transform: translateY(2px); /* сдвигаем стрелочку на 2 пикселя вниз */
-  transition: transform 0.2s ease-in-out; /* добавляем плавную анимацию для перехода */
+  background-position: center; 
+  transform: translateY(2px);
+  transition: transform 0.2s ease-in-out; 
 }
 
 .arrow-up {
-  transform: rotate(180deg) translateY(-2px); /* поворачиваем стрелочку на 180 градусов и сдвигаем на 2 пикселя вверх */
+  transform: rotate(180deg) translateY(-2px);
 }
 
 

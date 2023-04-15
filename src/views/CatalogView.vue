@@ -154,6 +154,7 @@ import axios from 'axios';
 }
 .catalog {
   margin-top: 30px;
+  min-height: 100vh;
 }
 .price{
   font-weight: bold;

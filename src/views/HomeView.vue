@@ -2,34 +2,32 @@
   <div class="home">
     <div class="hero">
       <div class="new-collection">
-        <h1>Новая коллекция</h1>
-        <hr>
+        <h1 class="new-header">Новая коллекция</h1>
+        <hr class="new-line">
         <router-link class="look-new" to="/catalog/new">СМОТРЕТЬ НОВИНКИ <img class="arrow-right" src="@/assets/icons/arrow-right.svg"></router-link>
       </div>
     </div>
     <div class="list-categories">
-
-    <div class="swiper-container">
-      <h2 align="left">Категории</h2>
-    <swiper
-    :slides-per-view="4"
-    :space-between="15"
-    @swiper="onSwiper"
-    @slideChange="onSlideChange">
-      <swiper-slide v-for="category in categories" :key="category.id">
-        <router-link :to="'/catalog/' + category.slug">
-          <div class="category-card">
-            <img :src="category.category_image">
-            <div class="category-name">{{ category.name }}</div>
-          </div>
-        </router-link>
-      </swiper-slide>
-  </swiper>
-    </div>
+      <div class="swiper-container">
+        <h2 class="category-header">Категории</h2>
+        <swiper
+          :slides-per-view="4"
+          @swiper="onSwiper"
+          @slideChange="onSlideChange">
+            <swiper-slide v-for="category in categories" :key="category.id">
+                <router-link :to="'/catalog/' + category.slug">
+                  <div class="category-card">
+                    <img :src="category.category_image">
+                    <div class="category-name">{{ category.name }}</div>
+                  </div>
+                </router-link>
+              </swiper-slide>
+        </swiper>
+      </div>
   </div>
     
     <div class="subscribe">
-      <h2>Узнайте  первым о новинках</h2>
+      <h2 class="sub-header">Узнайте  первым о новинках</h2>
       <input type="email" class="sub" placeholder="e-mail">
       <button class="sub-btn">ПОДПИСАТЬСЯ</button>
       <p>Нажимая на кнопку «Подписаться», я соглашаюсь на обработку моих персональных данных и ознакомлен(а) с условиями конфиденциальности.</p>
@@ -67,25 +65,35 @@ export default {
 
     }
   },
-  methods: {
-    onSwiper(swiper) {
-      console.log(swiper);
-    },
-    onSlideChange() {
-      console.log("slide change");
-    },
-
-  },
 }
 </script>
 
 
 <style lang="scss" scoped>
+.new-line{
+  width: 33%;
 
+}
+.new-header{
+  font-style: normal;
+font-weight: 300;
+font-size: 46px;
+line-height: 54px;
+margin-bottom: 10px;
+}
+.category-header{
+  text-align: left;
+  font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 42px;
+}
 
+.list-categories {
+  margin-top: 50px;
+}
 .hero {
-  /* Стили для блока с фотографией на фоне */
-  height: calc(100vh + 30px); /* высота блока будет равна 100vh минус высота шапки */
+  height: calc(100vh + 30px);
   background-image: url('@/assets/img/home-background.png');
 }
 .home {
@@ -102,21 +110,23 @@ export default {
 
 .category-card {
   /* Стили для каждой карточки категории */
-  width: 275px;
+  width: 274px;
   height: 450px;
   position: relative;
 }
 
-.category-name {
+.category-name  {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 40px;
+  opacity: 0.92;
   background-color: #E0BEA2;
   text-align: center;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 20px;
+  font-style: light;
   line-height: 40px;
   color: white;
 }
@@ -137,16 +147,23 @@ export default {
   height: 50px;
   
 }
+.sub-header {
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 42px;
+}
 .sub-btn{
   margin-top: 20px;
   width: 600px;
   height: 50px;
   background-color: #E0BEA2;
   border: 0;
+  color: white;
 }
 .swiper-container{
-  margin-left: 150px;
-  margin-right: 150px;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 .new-collection {
   position: absolute;
@@ -159,13 +176,14 @@ export default {
   text-decoration: none;
   color: white;
   font-size: 16px;
+  margin-top: 10px;
 
 }
 
 .look-new:hover{
-  color: red;
-  font-size: 17px;
-  transition-duration: 0.25s;
+  color: #E0BEA2;
+  transition-duration: 0.35s;
+
 }
 .arrow-right{
   height: 13px;
