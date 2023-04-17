@@ -13,9 +13,9 @@
         </tr>
       </thead>
       <tbody>
-          <tr v-for="(item, index) in cartItems" :key="index" class="table-rows">
+          <tr v-for="(item, index) in cartItems" :key="index">
         <td><router-link :to="'/catalog' + item.product.get_absolute_url"><img class="cart-img" :src="config.BACKEND_URL+item.product.main_image" alt="product image"></router-link></td>
-        <td><router-link class="link-product" :to="'/catalog' + item.product.get_absolute_url"><p>арт. {{ item.product.id}}</p>{{ item.product.name }}</router-link></td>
+        <td><router-link class="link-product" :to="'/catalog' + item.product.get_absolute_url"><p class="article">арт. {{ item.product.id}}</p><p class="prod-name">{{ item.product.name }}</p></router-link></td>
         <td><p style="color: #E0BEA2;">{{ item.size }}</p></td>
         <td><button class="counter" @click="decrementItem(index)" :disabled="item.quantity === 1">-</button>
           {{ item.quantity }}
@@ -122,8 +122,14 @@
 <script>
 import axios from 'axios';
 import { BACKEND_URL } from '@/config.js';
+import { useToast } from 'vue-toastification';
+
 
 export default {
+  setup() {
+      const toast = useToast();
+      return { toast }
+    },
   data() {
         return {
             selectedShipping: 'pickup',
@@ -166,18 +172,21 @@ decrementItem(index) {
             this.errors = []
             if (this.name === '') {
                 this.errors.push('The name field is missing!')
+           
             }
             if (this.email === '') {
                 this.errors.push('The email field is missing!')
+                
             }
             if (this.phone === '') {
                 this.errors.push('The phone field is missing!')
+                
             }
             if (!this.errors.length) {
                 this.Checkout()
             }
             else {
-              console.log(this.errors)
+              this.toast.error('Все поля обязательны!');
             }
 
         },
@@ -231,6 +240,12 @@ watch: {
 
 
 <style lang="scss" scoped>
+
+.article{
+  color: #E0BEA2;
+  font-style: light;
+  font-size: 14px;
+}
 .login-link{
   color: #E0BEA2;
   text-decoration: underline;

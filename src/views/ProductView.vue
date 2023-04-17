@@ -43,11 +43,15 @@
 
 import axios from 'axios';
 import { BACKEND_URL } from '@/config.js';
+import { useToast } from 'vue-toastification';
 
 
 export default{
 name: 'ProductView',
-
+setup() {
+      const toast = useToast();
+      return { toast }
+    },
 
 data() {
   return {
@@ -100,6 +104,7 @@ methods: {
   },
   addToCart() {
   if (!this.selectedSize || !this.product.id) {
+    this.toast.error('Вы должны выбрать размер');
     return;
   }
   const cartItem = {
@@ -115,6 +120,7 @@ methods: {
     cartItems.push(cartItem);
   }
   this.$store.commit('updateCart', cartItems);
+  this.toast.success('Товар добавлен в корзину');
   },
   addToWish() {
   if (!this.product.id) {
@@ -130,8 +136,10 @@ methods: {
   const index = this.$store.state.wishes.findIndex(item => item.id === wishItem.id);
   if (index > -1) {
     this.$store.commit('removeFromWishList', index);
+    this.toast.info('Товар удален из избранного');
   } else {
     this.$store.commit('addToWishList', wishItem);
+    this.toast.info('Товар добавлен в избранное');
   }
 },
 
@@ -159,12 +167,11 @@ methods: {
 
 <style lang="scss" scoped>
 
-
 .images-container {
-  margin-left: 80px;
   display: flex;
   flex-direction: row;
   float: left;
+  width: 50%;
   }
   
 .extra-images img{
@@ -190,6 +197,9 @@ methods: {
 .product-page {
   margin-top: 100px;
   min-height: 100vh;
+  margin-left: 7%;
+  margin-right: 7%;
+  
 }
 
 .image-controls {
@@ -223,11 +233,11 @@ methods: {
 }
 
 .product-info {
-
   margin-top: -25px;
-  margin-right: 100px;
   text-align: left;
   float: right;
+  width: 50%;
+
   
 }
 
@@ -309,8 +319,6 @@ p.product-description:hover {
 .arrow-up {
   transform: rotate(180deg) translateY(-2px);
 }
-
-
 
   </style>
   

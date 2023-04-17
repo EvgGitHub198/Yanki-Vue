@@ -11,9 +11,14 @@
       <div class="swiper-container">
         <h2 class="category-header">Категории</h2>
         <swiper
+          parallax
+          grabCursor
+          class="parallax-slider"
+          :space-between="10"
           :slides-per-view="4"
           @swiper="onSwiper"
-          @slideChange="onSlideChange">
+          @slideChange="onSlideChange"
+          :navigation="{ prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' }">
             <swiper-slide v-for="category in categories" :key="category.id">
                 <router-link :to="'/catalog/' + category.slug">
                   <div class="category-card">
@@ -22,6 +27,8 @@
                   </div>
                 </router-link>
               </swiper-slide>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>
         </swiper>
       </div>
   </div>
@@ -38,11 +45,14 @@
 </template>
 
 <script>
-
-import { Swiper, SwiperSlide } from "swiper/vue";
-import 'swiper/swiper.css';
-import 'swiper/swiper-bundle.css';
 import axios from 'axios';
+import SwiperCore, { Navigation } from 'swiper';
+import { Swiper, SwiperSlide } from "swiper/vue";
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+SwiperCore.use([Navigation]);
+
 
 export default {
   name: 'HomeView',
@@ -65,28 +75,35 @@ export default {
 
     }
   },
+  
 }
 </script>
 
 
 <style lang="scss" scoped>
+
+.swiper-button-next, .swiper-button-prev {
+  color: white;
+
+}
+
 .new-line{
   width: 33%;
 
 }
 .new-header{
   font-style: normal;
-font-weight: 300;
-font-size: 46px;
-line-height: 54px;
-margin-bottom: 10px;
+  font-weight: 300;
+  font-size: 46px;
+  line-height: 54px;
+  margin-bottom: 10px;
 }
 .category-header{
   text-align: left;
   font-style: normal;
-font-weight: 300;
-font-size: 36px;
-line-height: 42px;
+  font-weight: 300;
+  font-size: 36px;
+  line-height: 42px;
 }
 
 .list-categories {
@@ -129,10 +146,6 @@ line-height: 42px;
   font-style: light;
   line-height: 40px;
   color: white;
-}
-.scroll-arrow {
-  /* Стили для стрелочки прокрутки */
-  margin-top: 20px;
 }
 
 .subscribe {

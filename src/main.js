@@ -4,8 +4,9 @@ import router from './router'
 import 'normalize.css'
 import axios from 'axios'
 import store from './store'
-
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000'
-createApp(App).use(store).use(router, axios).mount('#app')
+createApp(App).use(store).use(router, axios).use(Toast,{position: "bottom-right", maxToasts: 5, timeout: 1700}).mount('#app')
