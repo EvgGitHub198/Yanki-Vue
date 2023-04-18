@@ -11,6 +11,8 @@ state: {
 },
 getters: {
   wishes: state => state.wishes
+  
+
 },
 mutations: {
 initializeStore(state) {

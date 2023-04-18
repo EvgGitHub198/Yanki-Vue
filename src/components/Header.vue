@@ -24,6 +24,7 @@
                 <router-link to="/login" class="navbar-icon"><img src="@/assets/icons/user-2.svg"></router-link>
               </template>
               <router-link to="/cart" class="navbar-menu-item"><img src="@/assets/icons/cart-2.svg"></router-link>
+              <div v-if="cartTotalLength>0" class="cart-counter">{{ cartTotalLength }}</div>
           </div>
         </div>
 
@@ -34,13 +35,17 @@
 
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   data() {
     return {
-      showNavbar: true
+      showNavbar: true,
+
     };
   },
   mounted() {
+  this.cart = this.$store.state.cart
   this.previousScrollPosition = 0;
   window.addEventListener("scroll", this.handleScroll);
 },
@@ -58,6 +63,16 @@ export default {
     this.previousScrollPosition = currentScrollPosition;
   }
 },
+computed: {
+    ...mapState(['cart']),
+    cartTotalLength() {
+      let totalLength = 0;
+      for (let i = 0; i < this.cart.items.length; i++) {
+        totalLength += this.cart.items[i].quantity;
+      }
+      return totalLength;
+    },
+  },
 };
 </script>
 
@@ -66,6 +81,29 @@ export default {
 
 
 <style lang="scss">
+
+
+.navbar-icons .cart-counter {
+  position: absolute;
+  top: -2px;
+  right: 14px;
+  width: 21px;
+  height: 21px;
+  background-color: #E0BEA2;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  color: black;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.navbar-icons .cart-icon {
+  position: relative;
+}
+
 .header.is-hidden {
   transform: translateY(-150%);
 }

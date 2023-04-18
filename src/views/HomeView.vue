@@ -7,8 +7,8 @@
         <router-link class="look-new" to="/catalog/new">СМОТРЕТЬ НОВИНКИ <img class="arrow-right" src="@/assets/icons/arrow-right.svg"></router-link>
       </div>
     </div>
-    <div class="list-categories">
-      <div class="swiper-container">
+    <div class="list-categories containercontainer">
+      <div class="swiper-container ">
         <h2 class="category-header">Категории</h2>
         <swiper
           parallax
@@ -91,6 +91,11 @@ export default {
   width: 33%;
 
 }
+.container {
+  margin: 0 auto;
+  max-width: 1920px;
+
+}
 .new-header{
   font-style: normal;
   font-weight: 300;
@@ -156,8 +161,9 @@ export default {
   height: 270px;
 }
 .sub{
-  width: 600px;
+  width: 592px;
   height: 50px;
+  text-align: center;
   
 }
 .sub-header {

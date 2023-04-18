@@ -170,8 +170,7 @@ methods: {
 .images-container {
   display: flex;
   flex-direction: row;
-  float: left;
-  width: 50%;
+  margin-right: 100px;
   }
   
 .extra-images img{
@@ -197,9 +196,12 @@ methods: {
 .product-page {
   margin-top: 100px;
   min-height: 100vh;
+  display: flex;
+  max-width: 1920px;
+  margin: 100px auto;
   margin-left: 7%;
-  margin-right: 7%;
-  
+  margin-right: 7%;  
+  justify-content: center;
 }
 
 .image-controls {
@@ -235,8 +237,7 @@ methods: {
 .product-info {
   margin-top: -25px;
   text-align: left;
-  float: right;
-  width: 50%;
+
 
   
 }
