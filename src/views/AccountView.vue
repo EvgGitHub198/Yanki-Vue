@@ -37,7 +37,6 @@
                 <div class="order-detail"><strong>Способ доставки: </strong>later</div>
               </div>
             </div>
-
         </div>
       </div>
     </div>
@@ -78,20 +77,29 @@
       <div v-show="activeTab === 'categories'">
         <h1>Категории</h1>
         <div class="admin-products-block">
+          <button class="tab-btn add-btn" @click="showAddModal">Добавить категорию</button>
+          <CreateCategory @add-category="addCategory" ref="addmodal"></CreateCategory>
           <div class="items-table">
               <div class="items-category-row admin-rows category-rows" v-for="category in categories" :key="category.id">
-                <div class=""><strong>{{ category.name }}</strong></div>
+                <div><strong>{{ category.name }}</strong></div>
+                <div>
+                  <button class="category-btn" @click="deleteCategory(category.id)"><img src="@/assets/icons/red-trash.svg" alt="Del"></button>
+                  
+                  <button class="category-btn" @click="showEditModal(category)"><img src="@/assets/icons/refactor.svg" alt="Change"></button>                  
+
+                </div>
               </div>
             </div>
         </div>
+        
       </div>
       <div v-show="activeTab === 'orders'">
         <h1>Заказы</h1>
-        <!-- <orders-component></orders-component> -->
       </div>
     </div>
     </div>
   </template>
+  <PutCategoryModal ref="putmodal" :category-data="editCategoryData"></PutCategoryModal>
 
 </template>
 
@@ -100,6 +108,9 @@
 
 <script>
 import axios from 'axios';
+import CreateCategory from '@/components/CreateCategoryModal.vue'
+import PutCategoryModal from '@/components/PutCategoryModal.vue'
+
 
 export default {
   name: 'AccountView',
@@ -111,16 +122,27 @@ export default {
       categories: [],
       date: new Date(),
       activeTab: 'products',
+      editCategoryData: null 
+      
     }
   },
+  components: {
+            CreateCategory,
+            PutCategoryModal
+        },
   mounted() {
     document.title = 'My account | Yanki'
     this.checkIsAdmin()
     this.getMyOrders()
     this.getAllProducts()
     this.getAllCategories()
+    
   },
   methods: {
+    showAddModal: function () {
+      this.$refs.addmodal.show = true
+  },
+
     formatDate(value) {
     return new Intl.DateTimeFormat("ru").format(new Date(value));
   },
@@ -186,23 +208,58 @@ async getAllProducts() {
         })
     },
     async getAllCategories() {
-  await axios
-  .get('/api/v1/admin/categories/')
-  .then(response => {
-            this.categories = response.data
-            
-        })
-        
-        .catch(error => {
-            console.log(error)
-        })
+    await axios
+      .get("/api/v1/admin/categories/")
+      .then((response) => {
+        this.categories = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  },
+  async addCategory(data) {
+  const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('slug', data.slug);
+  const categoryImageInput = this.$refs.addmodal.$refs.categoryImageInput;
+  if (categoryImageInput) {
+    formData.append('category_image', categoryImageInput.files[0]);
+  }
+  try {
+    const response = await axios.post('/api/v1/admin/categories/', formData,  {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    }
+    });
+    // Обработка успешного ответа от сервера.
+    console.log('Категория успешно добавлена!');
+    console.log(response.data);
+  } catch (error) {
+    // Обработка ошибки.
+    console.error('Ошибка при добавлении категории:', error);
+  }
+},
+async deleteCategory(id) {
+      try {
+        const response = await axios.delete(`/api/v1/admin/categories/${id}/`);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     },
+    showEditModal(category) {
+    this.editCategoryData = category // сохраняем данные редактируемой категории
+    
+    this.$refs.putmodal.show = true // вызываем модальное окно PutCategoryModal.vue
+
+  },
 
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
 
 .order-details {
   display: flex;
@@ -297,8 +354,8 @@ async getAllProducts() {
   display: flex;
   width: 100%;
   margin-bottom: 10px;
-  justify-content: left; /* выравнивание по горизонтали по центру */
-  align-items: left; 
+  justify-content: space-between;
+
 
 }
 
@@ -307,7 +364,10 @@ async getAllProducts() {
   text-align: center;
 }
 
-
+.category-icons{
+  float: right;
+  
+}
 
 .btn-logout{
   margin-top: 200px;
@@ -338,5 +398,16 @@ async getAllProducts() {
   background: #E0BEA2;
   transition: 0.7s;
   
+}
+.add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.category-btn{
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
 }
 </style>
