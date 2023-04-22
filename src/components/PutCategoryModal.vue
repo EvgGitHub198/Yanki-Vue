@@ -7,9 +7,10 @@
         </slot>
         <slot name="body">
           <div class="modal-content">
-            <input type="file" multiple class="modal-content__input_image" name="category_image" ref="categoryImageInput">
-            <input type="text" class="modal-content__input" placeholder="Наименование (Пальто)" name="name" v-model="categoryName">
-            <input type="text" class="modal-content__input" placeholder="Slug (Coats)" name="slug" v-model="categorySlug">
+            <input type="file" class="modal-content__input_image" name="category_image" ref="categoryImageInput">
+            <div v-if="categoryData.category_image"><img class="image__category" :src="categoryData.category_image" alt="Картинка категории"></div>
+            <input type="text" class="modal-content__input" placeholder="Новое наименование (Пальто)" name="name" v-model="categoryName">
+            <input type="text" class="modal-content__input" placeholder="Новый slug (Coats)" name="slug" v-model="categorySlug">
           </div>
         </slot>
         <slot name="footer">
@@ -22,52 +23,64 @@
       </div>
     </div>
   </template>
-  <script>
-  export default {
+
+
+<script>
+import axios from 'axios';
+
+export default {
     name: "PutCategoryModal",
-  
+
     props: {
-      categoryData: {
+        categoryData: {
         type: Object,
         required: true
-      }
+        }
     },
-  
+
     data: function () {
-      return {
+        return {
         show: false,
         categoryName: '',
         categorySlug: '',
-      }
+        }
     },
-  
-    methods: {
-      closeModal: function () {
-        this.show = false
-      },
-      editCategory: async function () {
-        const formData = new FormData();
-        formData.append('name', this.categoryName);
-        formData.append('slug', this.categorySlug);
-        const categoryImageInput = this.$refs.categoryImageInput;
-        if (categoryImageInput) {
-          formData.append('category_image', categoryImageInput.files[0]);
-        }
-        try {
-          const response = await axios.put(`/api/v1/admin/categories/${this.categoryData.id}/`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            }
-          });
-          console.log('Категория успешно изменена!');
-          console.log(response.data);
-        } catch (error) {
-          console.error('Ошибка при изменении категории:', error);
-        }
-      }
+    created() {
+    // добавляем условный оператор if, чтобы заполнить поля name и slug данными редактируемой категории, если они существуют
+    if (this.categoryData) {
+        this.categoryName = this.categoryData.name;
+        this.categorySlug = this.categoryData.slug; 
     }
-  }
-  </script>
+},
+
+
+methods: {
+    closeModal: function () {
+    this.show = false
+    },
+    editCategory: async function () {
+    const formData = new FormData();
+    formData.append('name', this.categoryName);
+    formData.append('slug', this.categorySlug);
+    const categoryImageInput = this.$refs.categoryImageInput;
+    if (categoryImageInput.files.length > 0) {
+        formData.append('category_image', categoryImageInput.files[0]);
+    }
+    try {
+        const response = await axios.put(`/api/v1/admin/categories/${this.categoryData.id}/`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        }
+        });
+        this.closeModal();
+    } catch (error) {
+        console.error('Ошибка при изменении категории:', error);
+    }
+    }
+
+}
+}
+</script>
 
 
 
@@ -81,6 +94,12 @@
     background: rgba(0, 0, 0, 0.39);
 }
 
+.image__category{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 20%;
+    height: 18%;
+}
 .modal {
     background: #fff;
     padding: 15px;

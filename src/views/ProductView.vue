@@ -20,7 +20,8 @@
       <div class="size-select">
       <select v-model="selectedSize" required>
         <option disabled value="undefined">Выберите размер</option>
-        <option v-for="size in product.sizes" :value="size">{{ size }}</option>
+        <option v-for="size in product.sizes" :value="size.size">{{ size.size }}</option>
+
       </select>
     </div>
       <div class="product-buttons">

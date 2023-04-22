@@ -18,7 +18,9 @@
                 <div class="product-details">
                   <p class="name">{{ product.name }}</p>
                   <p class="price">{{ product.price }} руб.</p>
-                  <p class="sizes">{{ product.sizes.join(" ") }}</p>
+                  <p class="sizes">
+                    {{ product.sizes.map(size => `${size.size}`).join(" ") }}
+                  </p>
                 </div>
               </router-link>
             </div>

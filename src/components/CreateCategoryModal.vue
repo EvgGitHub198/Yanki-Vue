@@ -53,7 +53,7 @@ export default {
 
 <style lang="scss" scoped>
 .modal-shadow {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     min-height: 100%;

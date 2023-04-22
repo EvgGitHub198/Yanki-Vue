@@ -1,14 +1,16 @@
 <template >
   <template v-if="!isAdmin">
+  
   <div class="account-page">
-    <h1 class="title">My account</h1>
+    <h1 class="title">Мой аккаунт</h1>
+    <button @click="logout()" class="tab-btn add-btn">Выйти</button>
     <div class="box" v-if="orders.length">
       <h3>История заказов</h3>
       <div class="orders-table">
         <div class="order-rows" v-for="(order, index) in orders" :key="order.id">
           <div class="order-info">
             <div class="order-id"><strong>№{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div>
-            <div class="order-status">Статус:<br><strong>Выполнен</strong></div>
+            <div class="order-status">Статус:<br><strong>{{ order.status }}</strong></div>
             <div class="order-amount">Сумма заказа:<br> <strong>{{ order.paid_amount }} руб.</strong></div>
             <div class="show-more" @click="toggleOrderInfo(index)">
               <img src="@/assets/icons/arrow-down.svg">
@@ -43,7 +45,6 @@
     <div v-else>
       <p>У вас пока нет заказов.</p>
     </div>
-    <button @click="logout()" class="btn-logout">Выйти</button>
   </div>
 </template>
 
@@ -53,7 +54,7 @@
       <button class="tab-btn" @click="activeTab = 'statistics'">Статистика</button>
       <button class="tab-btn" @click="activeTab = 'products'">Товары</button>
       <button class="tab-btn" @click="activeTab = 'categories'">Категории</button>
-      <button class="tab-btn" @click="activeTab = 'orders'">Заказы</button>
+      <button class="tab-btn" @click="activeTab = 'active-orders'">Заказы</button>
       <button class="tab-btn" @click="logout()">Выйти</button>
     </div>
     <div class="tab-content">
@@ -62,15 +63,24 @@
       </div>
       <div v-show="activeTab === 'products'">
         <h1>Товары</h1>
+        <button class="tab-btn add-btn">Добавить товар</button>
         <div class="admin-products-block">
-          <div class="items-table">
-              <div class="items-row admin-rows" v-for="product in products" :key="product.id">
+          <div class="items-table_products">
+              <div v-for="product in products" :key="product.id">
+                <div class="items-row admin-rows" v-for="(size, index) in product.sizes" :key="index">
                 <div class="item-info"><img class="order-item-img" :src="product.main_image"></div>
                 <div class="item-info"><span style="color: #E0BEA2; font-size: 14px">арт.{{ product.id }}</span><br>{{ product.name }}</div>
-                <div class="item-info">Размер: {{ product.sizes }}</div>
-                <div class="item-info">Количество: later</div>
-                <div class="item-info">Цена: <strong>{{ product.price }} руб.</strong></div>
+
+                  <div class="item-info" >
+                    <div>Размер: {{ size.size }}</div>
+                  </div>
+
+                <div class="item-info">Количество: {{ size.quantity }}</div>
+                <div class="item-info"><strong>{{ product.price }} руб.</strong></div>
+                <div class="product-icons"><button class="product-icons_btn"><img src="@/assets/icons/red-trash.svg"></button></div>
+                <div class="product-icons"><button class="product-icons_btn"><img src="@/assets/icons/refactor.svg"></button></div>
               </div>
+            </div>
             </div>
         </div>
       </div>
@@ -87,15 +97,108 @@
                   
                   <button class="category-btn" @click="showEditModal(category)"><img src="@/assets/icons/refactor.svg" alt="Change"></button>                  
 
-                </div>
+                </div>  
               </div>
             </div>
         </div>
+
+      </div>
+      <div v-show="activeTab === 'active-orders'">
+        <h1>Активные заказы</h1>
+        <button class="tab-btn" @click="activeTab = 'active-orders'">Активные</button>  <!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button> <!-- Блок с переключениями по табам -->
+
+        <div v-for="(order, index) in listorders" :key="order.id"  v-show="activeTab === 'active-orders'" >
+          <div v-if="order.status === 'В сборке'" class="order-rows">
+          <div class="order-info_header">
+           <div><strong>Заказ №{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div> 
+           <div><button :disabled="isSending || order.sendButtonText === 'Отправлено'" @click="sendOrder(order.id)" class="info_header_send-btn">{{ isSending ? 'Отправка...' : order.sendButtonText || 'Отправить' }}</button>
+                <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>
         
+          </div>
+
+          <div class="order-info__admin">
+            <div class="break"></div> <!-- break -->
+            <div class="order-info__item"><strong>Пользователь:</strong><br>{{ order.name}}</div>
+            <div class="order-info__item"><strong>Адрес:</strong><br>{{ order.address}} {{ order.zipcode}}</div>
+            <div class="order-info__item"><strong>Телефон:</strong><br>{{ order.phone}}</div>
+            <div class="order-info__item"><strong>Почта:</strong><br>{{ order.email}}</div>
+            <div class="break"></div> <!-- break -->
+            <div class="order-info__item"><strong>Товаров:</strong><br>{{ order.items.length }}</div>
+            <div class="order-info__item"><strong>Итого:</strong><br>{{ order.paid_amount }} руб.</div>
+            <div class="order-info__item_show-btn"><button class="show-btn" @click="toggleDetails(index)">Подробнее</button></div>
+            <div class="break"></div> <!-- break -->
+  
+              <div class="orders-info-block__admin" v-show="showDetails[index]">
+                <div>
+                  <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
+                    <div class="order-info__item"><img class="order-item-img" :src="'http://127.0.0.1:8000'+item.product.main_image"></div>
+                    <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
+                    <div class="order-info__item">Размер: {{ item.size }}</div>
+                    <div class="order-info__item">Количество: {{ item.quantity }}</div>
+                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>
+                    
+                                        
+                  </div>
+                </div>          
+              </div>
+
+          </div>
+
+          </div>
+        </div>
       </div>
-      <div v-show="activeTab === 'orders'">
-        <h1>Заказы</h1>
+
+      <div v-show="activeTab === 'sent-orders'">
+        <h1>Отправленные заказы</h1>
+        <button class="tab-btn" @click="activeTab = 'active-orders'">Активные</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button><!-- Блок с переключениями по табам -->
+
+
+
+        <div v-for="(order, index) in listorders" :key="order.id"  v-show="activeTab === 'sent-orders'" >
+          <div v-if="order.status === 'Отправлен'" class="order-rows">
+          <div class="order-info_header">
+           <div><strong>Заказ №{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div> 
+           <div>
+                <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>
+          </div>
+
+          <div class="order-info__admin">
+            <div class="break"></div> <!-- break -->
+            <div class="order-info__item"><strong>Пользователь:</strong><br>{{ order.name}}</div>
+            <div class="order-info__item"><strong>Адрес:</strong><br>{{ order.address}} {{ order.zipcode}}</div>
+            <div class="order-info__item"><strong>Телефон:</strong><br>{{ order.phone}}</div>
+            <div class="order-info__item"><strong>Почта:</strong><br>{{ order.email}}</div>
+            <div class="break"></div> <!-- break -->
+            <div class="order-info__item"><strong>Товаров:</strong><br>{{ order.items.length }}</div>
+            <div class="order-info__item"><strong>Итого:</strong><br>{{ order.paid_amount }} руб.</div>
+            <div class="order-info__item_show-btn"><button class="show-btn" @click="toggleDetails(index)">Подробнее</button></div>
+            <div class="break"></div> <!-- break -->
+  
+              <div class="orders-info-block__admin" v-show="showDetails[index]">
+                <div>
+                  <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
+                    <div class="order-info__item"><img class="order-item-img" :src="'http://127.0.0.1:8000'+item.product.main_image"></div>
+                    <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
+                    <div class="order-info__item">Размер: {{ item.size }}</div>
+                    <div class="order-info__item">Количество: {{ item.quantity }}</div>
+                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>
+                    
+                                        
+                  </div>
+                </div>          
+              </div>
+
+          </div>
+
+          </div>
+        </div>
+
       </div>
+
+
+
     </div>
     </div>
   </template>
@@ -122,7 +225,9 @@ export default {
       categories: [],
       date: new Date(),
       activeTab: 'products',
-      editCategoryData: null 
+      editCategoryData: null,
+      showDetails: [],
+      isSending: false,
       
     }
   },
@@ -131,13 +236,16 @@ export default {
             PutCategoryModal
         },
   mounted() {
+    
     document.title = 'My account | Yanki'
     this.checkIsAdmin()
     this.getMyOrders()
     this.getAllProducts()
     this.getAllCategories()
+    this.getAllOrders()
     
   },
+
   methods: {
     showAddModal: function () {
       this.$refs.addmodal.show = true
@@ -146,26 +254,29 @@ export default {
     formatDate(value) {
     return new Intl.DateTimeFormat("ru").format(new Date(value));
   },
-  toggleOrderInfo(index) {
+    toggleOrderInfo(index) {
       this.orders[index].showInfo = !this.orders[index].showInfo;
     },
+    toggleDetails(index) {
+    this.showDetails[index] = !this.showDetails[index];
+  },
       logout() {
-  axios.post('/api/v1/token/logout/')
-  .then(response => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('username')
-    localStorage.removeItem('userId')
-    localStorage.removeItem('isAdmin') 
-    this.$store.commit('removeToken')
-    this.$router.push('/')
-    setTimeout(function() {
-      location.reload();
-    }, 300);
+      axios.post('/api/v1/token/logout/')
+      .then(response => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('userId')
+        localStorage.removeItem('isAdmin') 
+        this.$store.commit('removeToken')
+        this.$router.push('/')
+        setTimeout(function() {
+          location.reload();
+        }, 100);
 
-  })
-  .catch(error => {
-    console.log(error)
-  })
+      })
+      .catch(error => {
+        console.log(error)
+      })
   },
 checkIsAdmin() {
   const isAdmin = localStorage.getItem('isAdmin')
@@ -187,14 +298,25 @@ async getMyOrders() {
         await axios
             .get('/api/v1/my-orders/')
             .then(response => {
-                this.orders = response.data
-               
+                this.orders = response.data   
             })
             
             .catch(error => {
                 console.log(error)
             })
     },
+
+async getAllOrders() {
+    await axios
+        .get('/api/v1/admin/orders/')
+        .then(response => {
+            this.listorders = response.data  
+        })
+        .catch(error => {
+            console.log(error)
+        })
+},
+
 async getAllProducts() {
   await axios
   .get('/api/v1/admin/products/')
@@ -248,17 +370,90 @@ async deleteCategory(id) {
       }
     },
     showEditModal(category) {
-    this.editCategoryData = category // сохраняем данные редактируемой категории
-    
+    this.editCategoryData = category // сохраняем данные редактируемой категории 
     this.$refs.putmodal.show = true // вызываем модальное окно PutCategoryModal.vue
+    this.$refs.putmodal.categoryName = category.name;
+    this.$refs.putmodal.categorySlug = category.slug;
 
   },
+
+ async deleteOrder(orderId) {
+  axios.delete(`/api/v1/admin/orders/${orderId}/`)
+    .then(response => {
+      // удаляем заказ из списка
+      this.listorders = this.listorders.filter(order => order.id !== orderId)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+},
+async sendOrder(orderId) {
+  this.isSending = true;
+  try {
+    await axios.put(`/api/v1/admin/orders/${orderId}/`, {
+      status: 'Отправлен',
+    });
+    
+    // Обновляем состояние заказа на клиенте
+    const updatedOrder = this.listorders.find((order) => order.id === orderId);
+    updatedOrder.status = 'Отправлен';
+    updatedOrder.sendButtonText = 'Отправлено';
+
+    // Меняем текст кнопки
+    const buttonIndex = this.listorders.findIndex((order) => order.id === orderId);
+    this.$set(this.listorders[buttonIndex], 'sendButtonText', 'Отправлено');
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    this.isSending = false;
+  }
+},
 
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.order-info__item_show-btn{
+  width: 50%;
+  text-align: end;
+}
+.show-btn{
+  width: 150px;
+  height: 50px;
+  background-color: #ddd;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+.info_header_send-btn{
+  width: 150px;
+  height: 50px;
+  background-color: #E0BEA2;
+  color: white;
+  border: none;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.info_header_delete-btn{
+  width: 150px;
+  height: 50px;
+  background-color: #ddd;
+  color: red;
+  border: none;
+  cursor: pointer;
+}
+.order-info_header{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.break {
+  flex-basis: 100%;
+  height: 0;
+  margin-top: 40px;
+}
 
 
 .order-details {
@@ -305,7 +500,7 @@ async deleteCategory(id) {
   margin-bottom: 10px;
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
-  // border-top: 1px solid #ddd;
+
 }
 
 .tabs {
@@ -316,7 +511,15 @@ async deleteCategory(id) {
 .order-info {
   display: flex;
   justify-content: space-between;
-  
+
+}
+.order-info__admin {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: left;
+}
+.order-info__item {
+  width: 25%;
 }
 
 .order-info > * {
@@ -331,11 +534,18 @@ async deleteCategory(id) {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.orders-info-block__admin{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
 
 .orders-info-block.show {
   display: block; /* добавляем стиль для показа блока */
 }
-
+.items-table_products {
+  margin-top: 30px;
+}
 .items-table {
   margin-top: 30px;
   display: flex;
@@ -355,13 +565,20 @@ async deleteCategory(id) {
   width: 100%;
   margin-bottom: 10px;
   justify-content: space-between;
-
-
 }
 
 .item-info {
   flex-basis: 20%;
   text-align: center;
+}
+.product-icons {
+  flex-basis: 5%;
+  text-align: center;
+}
+.product-icons_btn {
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 .category-icons{
@@ -403,6 +620,8 @@ async deleteCategory(id) {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #E0BEA2;
+  color: white;
 }
 .category-btn{
   background: none;
