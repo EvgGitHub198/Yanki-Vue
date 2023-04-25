@@ -7,13 +7,37 @@
         </slot>
         <slot name="body">
           <div class="modal-content">
-            <div class="image-files">
-                <input type="file" class="modal-content__input_image" name="product_main_image" ref="productMainImageInput">
-                <input type="file" class="modal-content__input_image" name="product_ex_image1" ref="productExImage1Input">
-                <input type="file" class="modal-content__input_image" name="product_ex_image2" ref="productExImage2Input">
-                <input type="file" class="modal-content__input_image" name="product_ex_image3" ref="productExImage3Input">
-                <input type="file" class="modal-content__input_image" name="product_ex_image4" ref="productExImage4Input">
-                <input type="file" class="modal-content__input_image" name="product_ex_image5" ref="productExImage5Input">
+            <div class="file-upload">
+              <label for="product_main_image">
+                <img src="@/assets/img/photo.png" alt="Upload">
+                <span ref="mainimage">Файл не выбран</span>
+              </label>
+              <input type="file" class="modal-content__input_image" id="product_main_image" name="product_main_image" ref="productMainImageInput" @change="updateMainImage">
+              <label for="product_ex_image1">
+                <img src="@/assets/img/photo.png" alt="Upload">
+                <span ref="filename1">Файл не выбран</span>
+              </label>
+              <input type="file" class="modal-content__input_image" id="product_ex_image1" name="product_ex_image1" ref="productExImage1Input" @change="updateFileName(1)">
+              <label for="product_ex_image2">
+                <img src="@/assets/img/photo.png" alt="Upload">
+                <span ref="filename2">Файл не выбран</span>
+              </label>
+              <input type="file" class="modal-content__input_image" id="product_ex_image2" name="product_ex_image2" ref="productExImage2Input" @change="updateFileName(2)">
+              <label for="product_ex_image3">
+                <img src="@/assets/img/photo.png" alt="Upload">
+                <span ref="filename3">Файл не выбран</span>
+              </label>
+              <input type="file" class="modal-content__input_image" id="product_ex_image3" name="product_ex_image3" ref="productExImage3Input" @change="updateFileName(3)">
+              <label for="product_ex_image4">
+                <img src="@/assets/img/photo.png" alt="Upload">
+                <span ref="filename4">Файл не выбран</span>
+              </label>
+              <input type="file" class="modal-content__input_image" id="product_ex_image4" name="product_ex_image4" ref="productExImage4Input" @change="updateFileName(4)">
+              <label for="product_ex_image5">
+                <img src="@/assets/img/photo.png" alt="Upload">
+                <span ref="filename5">Файл не выбран</span>
+              </label>
+              <input type="file" class="modal-content__input_image" id="product_ex_image5" name="product_ex_image5" ref="productExImage5Input" @change="updateFileName(5)">
             </div>
             <input type="text" class="modal-content__input" placeholder="Наименование (Розовое Пальто)" name="name" v-model="productName">
             <input type="text" class="modal-content__input" placeholder="Slug (pink-coat)" name="slug" v-model="productSlug">
@@ -65,6 +89,7 @@ export default {
 
     data() {
     return {
+      
         show: false,
         productName: '',
         productSlug: '',
@@ -75,9 +100,10 @@ export default {
         selectedSizes: [],
         selectedSizesQuantity: {},
         categories: [],
-        
+     
     }
     },
+    
   mounted(){
     axios
         .get('api/v1/categories')
@@ -88,12 +114,39 @@ export default {
           console.log(error);
         });
         console.log(this.productData);
-
-
+      
   },
   methods: {
-    closeModal() {
-      this.show = false
+        closeModal() {
+          this.show = false
+        },
+      updateMainImage() {
+        const input = this.$refs[`productMainImageInput`];
+      const fileNameSpan = this.$refs[`mainimage`];
+      if (input.files.length > 0) {
+        fileNameSpan.textContent = input.files[0].name;
+        console.log('File name:', fileNameSpan.textContent);
+      } else {
+        fileNameSpan.textContent = 'Файл не выбран';
+        console.log('File not selected');
+      }
+
+      },
+
+        updateFileName(index) {
+      const input = this.$refs[`productExImage${index}Input`];
+      const fileNameSpan = this.$refs[`filename${index}`];
+
+      console.log('input:', input);
+      console.log('fileNameSpan:', fileNameSpan);
+
+      if (input.files.length > 0) {
+        fileNameSpan.textContent = input.files[0].name;
+        console.log('File name:', fileNameSpan.textContent);
+      } else {
+        fileNameSpan.textContent = 'Файл не выбран';
+        console.log('File not selected');
+      }
     },
 
     editProduct() {
@@ -162,13 +215,48 @@ export default {
         }
         }
     },
+    
 
-  }
+
+
+
+
+
+  },
+
 }
 </script>
 
 
 <style lang="scss" scoped>
+
+.file-upload {
+  justify-content: space-between;
+  display: flex;
+}
+
+.file-upload img {
+  width: 100px;
+  height: 85x;
+  cursor: pointer;
+}
+
+
+.file-upload input[type="file"] {
+  display: none;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+
+
+
 .size {
   width: 65px;
   height: 30px;
@@ -269,9 +357,8 @@ export default {
     margin-top: 10px;
 
 }
-.image-files{
+.file-upload{
     margin-bottom: 15px;
-    margin: 0 auto;
 }
 .quantity-input{
     width: 25px;

@@ -7,7 +7,17 @@
         </slot>
         <slot name="body">
           <div class="modal-content">
-            <input type="file" class="modal-content__input_image" name="category_image" ref="categoryImageInput">
+
+            <div class="file-upload">
+                <label>
+                  <input type="file" id="category_image" class="modal-content__input_image" name="category_image" ref="categoryImageInput" @change="filesSelected">
+                </label>
+            </div> 
+            <div class="file-info" v-if="!files || !files.length"><span>Выберите файл</span></div>
+            <div class="file-info" v-else>
+              <span v-for="file in files" :key="file.name">{{file.name}}</span>
+            </div>
+
             <div v-if="categoryData.category_image"><img class="image__category" :src="categoryData.category_image" alt="Картинка категории"></div>
             <input type="text" class="modal-content__input" placeholder="Новое наименование (Пальто)" name="name" v-model="categoryName">
             <input type="text" class="modal-content__input" placeholder="Новый slug (Coats)" name="slug" v-model="categorySlug">
@@ -43,6 +53,7 @@ export default {
         show: false,
         categoryName: '',
         categorySlug: '',
+        files: null
         }
     },
     created() {
@@ -57,6 +68,9 @@ export default {
 methods: {
     closeModal() {
     this.show = false
+    },
+    filesSelected(e) {
+    this.files = e.target.files
     },
     editCategory: async function () {
     const formData = new FormData();
@@ -159,4 +173,60 @@ methods: {
         }
     }
 }
+
+.file-upload input[type="file"]{
+
+display: none;
+
+}
+
+
+.file-upload {
+
+position: relative;
+overflow: hidden;
+width: 95px;
+height: 110px;
+background: url('@/assets/img/photo.png');
+border-radius: 10px;
+color: #fff;
+text-align: center;
+display: flex;
+justify-content: center;
+margin: 0 auto;
+margin-bottom: 5px;
+
+}
+
+.file-upload:hover {
+
+
+  filter: brightness(80%)
+}
+
+.file-info {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+}
+/* Растягиваем label на всю область блока .file-upload */
+
+.file-upload label {
+
+display: flex;
+
+position: absolute;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+cursor: pointer;
+
+}
+
 </style>

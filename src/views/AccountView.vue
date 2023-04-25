@@ -390,6 +390,11 @@ async getAllProducts() {
     this.$refs.editproductmodal.categoryName = product.category;
     this.$refs.editproductmodal.productDescription = product.description;
     this.$refs.editproductmodal.productId = product.id;
+    for (const size of product.sizes) {
+    this.$refs.editproductmodal.selectedSizesQuantity[size.size] = size.quantity;
+    this.$refs.editproductmodal.selectedSizes.push(size.size);
+    }
+
     
 
   },

@@ -4,7 +4,11 @@
             <input class="search-input" type="text" v-model="query" placeholder="Введите ваш запрос..." @input="search">
         </form>
         <div class="products">
-            <div class="product-list">
+          <div v-if="products.length === 0" class="no-results">
+            <p class="empty-words"><strong>По вашему запросу ничего не найдено</strong></p>
+            <img class="empty-img" src="@/assets/icons/magnifier-2.svg">
+          </div>
+            <div class="product-list" v-else>
                 <div v-for="product in products" :key="product.id">
                     <router-link :to="'/catalog'+product.get_absolute_url" class="product-items">
                         <div class="product-card">
@@ -14,13 +18,16 @@
                             <div class="product-details">
                                 <p class="name">{{ product.name }}</p>
                                 <p class="price">{{ product.price }} руб.</p>
-                                <p class="sizes">{{ product.sizes.join(" ") }}</p>
+                                <p class="sizes">
+                                  {{ product.sizes.map(size => `${size.size}`).join(" ") }}
+                                </p>
                             </div>
                         </div>
                     </router-link>
                 </div>
             </div>
         </div>
+
     </div>
  </template>
  
@@ -135,5 +142,10 @@
 .name{
   font-size: 16px;
 }
-
+.empty-img{
+  width: 400px;
+}
+.empty-words{
+  font-size: 30px;
+}
 </style>
