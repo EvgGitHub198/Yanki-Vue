@@ -16,7 +16,7 @@
         <slot name="footer">
           <div class="modal-footer">
             <button class="modal-footer__button" @click="editCategory">
-              ИЗМЕНИТЬ
+                РЕДАКТИРОВАТЬ
             </button>
           </div>
         </slot>
@@ -38,7 +38,7 @@ export default {
         }
     },
 
-    data: function () {
+    data() {
         return {
         show: false,
         categoryName: '',
@@ -55,7 +55,7 @@ export default {
 
 
 methods: {
-    closeModal: function () {
+    closeModal() {
     this.show = false
     },
     editCategory: async function () {

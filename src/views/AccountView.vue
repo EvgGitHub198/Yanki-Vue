@@ -63,24 +63,24 @@
       </div>
       <div v-show="activeTab === 'products'">
         <h1>Товары</h1>
-        <button class="tab-btn add-btn">Добавить товар</button>
+        <button class="tab-btn add-btn" @click="showAddProductModal">Добавить товар</button>
         <div class="admin-products-block">
-          <div class="items-table_products">
+            <div class="items-table_products">
               <div v-for="product in products" :key="product.id">
                 <div class="items-row admin-rows" v-for="(size, index) in product.sizes" :key="index">
-                <div class="item-info"><img class="order-item-img" :src="product.main_image"></div>
-                <div class="item-info"><span style="color: #E0BEA2; font-size: 14px">арт.{{ product.id }}</span><br>{{ product.name }}</div>
+                  <div class="item-info"><img class="order-item-img" :src="product.main_image"></div>
+                  <div class="item-info"><span style="color: #E0BEA2; font-size: 14px">арт.{{ product.id }}</span><br>{{ product.name }}</div>
 
-                  <div class="item-info" >
-                    <div>Размер: {{ size.size }}</div>
-                  </div>
+                    <div class="item-info">
+                      <div>Размер: {{ size.size }}</div>
+                    </div>
 
-                <div class="item-info">Количество: {{ size.quantity }}</div>
-                <div class="item-info"><strong>{{ product.price }} руб.</strong></div>
-                <div class="product-icons"><button class="product-icons_btn"><img src="@/assets/icons/red-trash.svg"></button></div>
-                <div class="product-icons"><button class="product-icons_btn"><img src="@/assets/icons/refactor.svg"></button></div>
+                  <div class="item-info">Количество: {{ size.quantity }}</div>
+                  <div class="item-info"><strong>{{ product.price }} руб.</strong></div>
+                  <div class="product-icons"><button class="product-icons_btn"  @click="deleteSize(product.id, size.size)"><img src="@/assets/icons/red-trash.svg"></button></div>
+                  <div class="product-icons"><button class="product-icons_btn" @click="ProductEditModal(product)"><img src="@/assets/icons/refactor.svg"></button></div>
+                </div>
               </div>
-            </div>
             </div>
         </div>
       </div>
@@ -96,7 +96,6 @@
                   <button class="category-btn" @click="deleteCategory(category.id)"><img src="@/assets/icons/red-trash.svg" alt="Del"></button>
                   
                   <button class="category-btn" @click="showEditModal(category)"><img src="@/assets/icons/refactor.svg" alt="Change"></button>                  
-
                 </div>  
               </div>
             </div>
@@ -203,7 +202,8 @@
     </div>
   </template>
   <PutCategoryModal ref="putmodal" :category-data="editCategoryData"></PutCategoryModal>
-
+  <CreateProduct ref="addproductmodal" @add-product="addProduct"></CreateProduct>
+  <PutProduct ref="editproductmodal" :product-data="editProductData"  @edit-product="editProduct"></PutProduct>
 </template>
 
 
@@ -213,6 +213,8 @@
 import axios from 'axios';
 import CreateCategory from '@/components/CreateCategoryModal.vue'
 import PutCategoryModal from '@/components/PutCategoryModal.vue'
+import CreateProduct from '@/components/CreateProductModal.vue'
+import PutProduct from '@/components/PutProductModal.vue'
 
 
 export default {
@@ -226,14 +228,18 @@ export default {
       date: new Date(),
       activeTab: 'products',
       editCategoryData: null,
+      editProductData: null,
       showDetails: [],
       isSending: false,
+      
       
     }
   },
   components: {
             CreateCategory,
-            PutCategoryModal
+            PutCategoryModal,
+            CreateProduct,
+            PutProduct
         },
   mounted() {
     
@@ -339,76 +345,100 @@ async getAllProducts() {
         console.log(error);
       });
   },
-  async addCategory(data) {
-  const formData = new FormData();
-  formData.append('name', data.name);
-  formData.append('slug', data.slug);
-  const categoryImageInput = this.$refs.addmodal.$refs.categoryImageInput;
-  if (categoryImageInput) {
-    formData.append('category_image', categoryImageInput.files[0]);
-  }
-  try {
-    const response = await axios.post('/api/v1/admin/categories/', formData,  {
-    headers: {
-      "Content-Type": "multipart/form-data",
+    async addCategory(data) {
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('slug', data.slug);
+    const categoryImageInput = this.$refs.addmodal.$refs.categoryImageInput;
+    if (categoryImageInput) {
+      formData.append('category_image', categoryImageInput.files[0]);
     }
-    });
-    // Обработка успешного ответа от сервера.
-    console.log('Категория успешно добавлена!');
-    console.log(response.data);
-  } catch (error) {
-    // Обработка ошибки.
-    console.error('Ошибка при добавлении категории:', error);
-  }
-},
-async deleteCategory(id) {
+    try {
+      const response = await axios.post('/api/v1/admin/categories/', formData,  {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+      });
+      // Обработка успешного ответа от сервера.
+      console.log('Категория успешно добавлена!');
+      console.log(response.data);
+    } catch (error) {
+      // Обработка ошибки.
+      console.error('Ошибка при добавлении категории:', error);
+    }
+  },
+  async deleteCategory(id) {
+        try {
+          const response = await axios.delete(`/api/v1/admin/categories/${id}/`);
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      showEditModal(category) {
+      this.editCategoryData = category // сохраняем данные редактируемой категории 
+      this.$refs.putmodal.show = true // вызываем модальное окно PutCategoryModal.vue
+      this.$refs.putmodal.categoryName = category.name;
+      this.$refs.putmodal.categorySlug = category.slug;
+  },
+  ProductEditModal(product) {
+    this.$refs.editproductmodal.show = true
+    this.editProductData = product
+    this.$refs.editproductmodal.productName = product.name;
+    this.$refs.editproductmodal.productSlug = product.slug;
+    this.$refs.editproductmodal.productPrice = product.price;
+    this.$refs.editproductmodal.categoryName = product.category;
+    this.$refs.editproductmodal.productDescription = product.description;
+    this.$refs.editproductmodal.productId = product.id;
+    
+
+  },
+  showAddProductModal() {
+    this.$refs.addproductmodal.show = true 
+  },
+  async deleteOrder(orderId) {
+    axios.delete(`/api/v1/admin/orders/${orderId}/`)
+      .then(response => {
+        // удаляем заказ из списка
+        this.listorders = this.listorders.filter(order => order.id !== orderId)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  },
+  async sendOrder(orderId) {
+    this.isSending = true;
+    try {
+      await axios.put(`/api/v1/admin/orders/${orderId}/`, {
+        status: 'Отправлен',
+      });
+      
+      // Обновляем состояние заказа на клиенте
+      const updatedOrder = this.listorders.find((order) => order.id === orderId);
+      updatedOrder.status = 'Отправлен';
+      updatedOrder.sendButtonText = 'Отправлено';
+
+      // Меняем текст кнопки
+      const buttonIndex = this.listorders.findIndex((order) => order.id === orderId);
+      this.$set(this.listorders[buttonIndex], 'sendButtonText', 'Отправлено');
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isSending = false;
+    }
+  },
+  async deleteSize(productId, size) {
       try {
-        const response = await axios.delete(`/api/v1/admin/categories/${id}/`);
-        console.log(response.data);
+        await axios.delete(`/api/v1/admin/products/${productId}/sizes/${size}/`);
+        // Удалить элемент из списка на фронтенде
+        const productIndex = this.products.findIndex(product => product.id === productId);
+        const sizeIndex = this.products[productIndex].sizes.findIndex(s => s.size === size);
+        this.products[productIndex].sizes.splice(sizeIndex, 1);
       } catch (error) {
         console.log(error);
       }
-    },
-    showEditModal(category) {
-    this.editCategoryData = category // сохраняем данные редактируемой категории 
-    this.$refs.putmodal.show = true // вызываем модальное окно PutCategoryModal.vue
-    this.$refs.putmodal.categoryName = category.name;
-    this.$refs.putmodal.categorySlug = category.slug;
-
-  },
-
- async deleteOrder(orderId) {
-  axios.delete(`/api/v1/admin/orders/${orderId}/`)
-    .then(response => {
-      // удаляем заказ из списка
-      this.listorders = this.listorders.filter(order => order.id !== orderId)
-    })
-    .catch(error => {
-      console.log(error)
-    })
-},
-async sendOrder(orderId) {
-  this.isSending = true;
-  try {
-    await axios.put(`/api/v1/admin/orders/${orderId}/`, {
-      status: 'Отправлен',
-    });
-    
-    // Обновляем состояние заказа на клиенте
-    const updatedOrder = this.listorders.find((order) => order.id === orderId);
-    updatedOrder.status = 'Отправлен';
-    updatedOrder.sendButtonText = 'Отправлено';
-
-    // Меняем текст кнопки
-    const buttonIndex = this.listorders.findIndex((order) => order.id === orderId);
-    this.$set(this.listorders[buttonIndex], 'sendButtonText', 'Отправлено');
-
-  } catch (error) {
-    console.error(error);
-  } finally {
-    this.isSending = false;
-  }
-},
+    }
 
   }
 }

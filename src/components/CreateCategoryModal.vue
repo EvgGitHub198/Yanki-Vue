@@ -9,7 +9,7 @@
           <div class="modal-content">
             <input type="file" multiple class="modal-content__input_image" name="category_image" ref="categoryImageInput">
           <input type="text" class="modal-content__input" placeholder="Наименование (Пальто)" name="name" v-model="categoryName">
-          <input type="text" class="modal-content__input" placeholder="Slug (Coats)" name="slug" v-model="categorySlug">
+          <input type="text" class="modal-content__input" placeholder="Slug (coats)" name="slug" v-model="categorySlug">
           </div>
         </slot>
         <slot name="footer">
