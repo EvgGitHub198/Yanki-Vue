@@ -8,36 +8,47 @@
         <slot name="body">
           <div class="modal-content">
             <div class="file-upload">
+              
               <label for="product_main_image">
                 <img src="@/assets/img/photo.png" alt="Upload">
                 <span ref="mainimage">Файл не выбран</span>
               </label>
               <input type="file" class="modal-content__input_image" id="product_main_image" name="product_main_image" ref="productMainImageInput" @change="updateMainImage">
+              
               <label for="product_ex_image1">
                 <img src="@/assets/img/photo.png" alt="Upload">
                 <span ref="filename1">Файл не выбран</span>
               </label>
               <input type="file" class="modal-content__input_image" id="product_ex_image1" name="product_ex_image1" ref="productExImage1Input" @change="updateFileName(1)">
+              
               <label for="product_ex_image2">
                 <img src="@/assets/img/photo.png" alt="Upload">
                 <span ref="filename2">Файл не выбран</span>
               </label>
               <input type="file" class="modal-content__input_image" id="product_ex_image2" name="product_ex_image2" ref="productExImage2Input" @change="updateFileName(2)">
+              
               <label for="product_ex_image3">
                 <img src="@/assets/img/photo.png" alt="Upload">
                 <span ref="filename3">Файл не выбран</span>
-              </label>
+              </label>           
               <input type="file" class="modal-content__input_image" id="product_ex_image3" name="product_ex_image3" ref="productExImage3Input" @change="updateFileName(3)">
+              
+              
               <label for="product_ex_image4">
                 <img src="@/assets/img/photo.png" alt="Upload">
                 <span ref="filename4">Файл не выбран</span>
               </label>
               <input type="file" class="modal-content__input_image" id="product_ex_image4" name="product_ex_image4" ref="productExImage4Input" @change="updateFileName(4)">
+              
+              
+              
               <label for="product_ex_image5">
                 <img src="@/assets/img/photo.png" alt="Upload">
                 <span ref="filename5">Файл не выбран</span>
               </label>
               <input type="file" class="modal-content__input_image" id="product_ex_image5" name="product_ex_image5" ref="productExImage5Input" @change="updateFileName(5)">
+            
+            
             </div>
             <input type="text" class="modal-content__input" placeholder="Наименование (Розовое Пальто)" name="name" v-model="productName">
             <input type="text" class="modal-content__input" placeholder="Slug (pink-coat)" name="slug" v-model="productSlug">
@@ -113,8 +124,7 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-        console.log(this.productData);
-      
+
   },
   methods: {
         closeModal() {

@@ -60,6 +60,24 @@
     <div class="tab-content">
       <div v-show="activeTab === 'statistics'">
         <h1>Статистика</h1>
+        <div class="statistics-container">
+            <div class="main-stat">
+              <div class="main-stat_item"><p class="stat_item__text">ТОВАРЫ:</p><p class="stat_item__text stat_item__info">{{products.length}} позиций</p></div>
+              <div class="main-stat_item"><p class="stat_item__text">КАТЕГОРИИ:</p><p class="stat_item__text stat_item__info">{{categories.length}} категорий</p></div>
+              <div class="main-stat_item"><p class="stat_item__text">ЗАКАЗЫ:</p><p class="stat_item__text stat_item__info">{{ listorders.length }} позиций</p></div>
+              <div class="main-stat_item"><p class="stat_item__text">ПОЛЬЗОВАТЕЛИ:</p><p class="stat_item__text stat_item__info">{{users.length}} клиентов</p></div>
+              <div class="main-stat_item"><p class="stat_item__text">ПРОДАЖИ:</p><p class="stat_item__text stat_item__info">{{sumOfAllOrders}} руб.</p></div>
+            </div>
+
+            <div class="graphics first-graphic">
+              <LineChart />
+            </div>
+
+            <div class="graphics second-graphic">
+              <BarChart />
+            </div>
+
+        </div>
       </div>
       <div v-show="activeTab === 'products'">
         <h1>Товары</h1>
@@ -91,6 +109,7 @@
           <CreateCategory @add-category="addCategory" ref="addmodal"></CreateCategory>
           <div class="items-table">
               <div class="items-category-row admin-rows category-rows" v-for="category in categories" :key="category.id">
+                
                 <div><strong>{{ category.name }}</strong></div>
                 <div>
                   <button class="category-btn" @click="deleteCategory(category.id)"><img src="@/assets/icons/red-trash.svg" alt="Del"></button>
@@ -112,14 +131,12 @@
           <div class="order-info_header">
            <div><strong>Заказ №{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div> 
            <div><button :disabled="isSending || order.sendButtonText === 'Отправлено'" @click="sendOrder(order.id)" class="info_header_send-btn">{{ isSending ? 'Отправка...' : order.sendButtonText || 'Отправить' }}</button>
-                <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>
-        
+                <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>      
           </div>
-
           <div class="order-info__admin">
             <div class="break"></div> <!-- break -->
             <div class="order-info__item"><strong>Пользователь:</strong><br>{{ order.name}}</div>
-            <div class="order-info__item"><strong>Адрес:</strong><br>{{ order.address}} {{ order.zipcode}}</div>
+            <div class="order-info__item"><strong>Адрес:</strong><br>{{ order.address}}<br>{{ order.zipcode}}</div>
             <div class="order-info__item"><strong>Телефон:</strong><br>{{ order.phone}}</div>
             <div class="order-info__item"><strong>Почта:</strong><br>{{ order.email}}</div>
             <div class="break"></div> <!-- break -->
@@ -127,7 +144,6 @@
             <div class="order-info__item"><strong>Итого:</strong><br>{{ order.paid_amount }} руб.</div>
             <div class="order-info__item_show-btn"><button class="show-btn" @click="toggleDetails(index)">Подробнее</button></div>
             <div class="break"></div> <!-- break -->
-  
               <div class="orders-info-block__admin" v-show="showDetails[index]">
                 <div>
                   <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
@@ -135,26 +151,18 @@
                     <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
                     <div class="order-info__item">Размер: {{ item.size }}</div>
                     <div class="order-info__item">Количество: {{ item.quantity }}</div>
-                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>
-                    
-                                        
+                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>                                                           
                   </div>
                 </div>          
               </div>
-
           </div>
-
           </div>
         </div>
       </div>
-
       <div v-show="activeTab === 'sent-orders'">
         <h1>Отправленные заказы</h1>
         <button class="tab-btn" @click="activeTab = 'active-orders'">Активные</button><!-- Блок с переключениями по табам -->
         <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button><!-- Блок с переключениями по табам -->
-
-
-
         <div v-for="(order, index) in listorders" :key="order.id"  v-show="activeTab === 'sent-orders'" >
           <div v-if="order.status === 'Отправлен'" class="order-rows">
           <div class="order-info_header">
@@ -162,7 +170,6 @@
            <div>
                 <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>
           </div>
-
           <div class="order-info__admin">
             <div class="break"></div> <!-- break -->
             <div class="order-info__item"><strong>Пользователь:</strong><br>{{ order.name}}</div>
@@ -174,7 +181,6 @@
             <div class="order-info__item"><strong>Итого:</strong><br>{{ order.paid_amount }} руб.</div>
             <div class="order-info__item_show-btn"><button class="show-btn" @click="toggleDetails(index)">Подробнее</button></div>
             <div class="break"></div> <!-- break -->
-  
               <div class="orders-info-block__admin" v-show="showDetails[index]">
                 <div>
                   <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
@@ -182,22 +188,14 @@
                     <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
                     <div class="order-info__item">Размер: {{ item.size }}</div>
                     <div class="order-info__item">Количество: {{ item.quantity }}</div>
-                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>
-                    
-                                        
+                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>                                   
                   </div>
                 </div>          
               </div>
-
           </div>
-
           </div>
         </div>
-
       </div>
-
-
-
     </div>
     </div>
   </template>
@@ -215,7 +213,8 @@ import CreateCategory from '@/components/CreateCategoryModal.vue'
 import PutCategoryModal from '@/components/PutCategoryModal.vue'
 import CreateProduct from '@/components/CreateProductModal.vue'
 import PutProduct from '@/components/PutProductModal.vue'
-
+import BarChart from '@/components/SalesYear.vue'
+import LineChart from '@/components/SalesMonth.vue'
 
 export default {
   name: 'AccountView',
@@ -223,10 +222,12 @@ export default {
     return {
       isAdmin: false,
       orders: [],
+      users: [],
+      listorders: [],
       products: [],
       categories: [],
       date: new Date(),
-      activeTab: 'products',
+      activeTab: 'statistics',
       editCategoryData: null,
       editProductData: null,
       showDetails: [],
@@ -239,7 +240,9 @@ export default {
             CreateCategory,
             PutCategoryModal,
             CreateProduct,
-            PutProduct
+            PutProduct,
+            BarChart,
+            LineChart
         },
   mounted() {
     
@@ -249,7 +252,16 @@ export default {
     this.getAllProducts()
     this.getAllCategories()
     this.getAllOrders()
-    
+    this.getUsers()
+  },
+  computed: {
+    sumOfAllOrders() {
+    let sum = 0;
+    for (let i = 0; i < this.listorders.length; i++) {
+      sum += parseFloat(this.listorders[i].paid_amount);
+    }
+    return sum;
+  }
   },
 
   methods: {
@@ -316,7 +328,7 @@ async getAllOrders() {
     await axios
         .get('/api/v1/admin/orders/')
         .then(response => {
-            this.listorders = response.data  
+            this.listorders = response.data
         })
         .catch(error => {
             console.log(error)
@@ -345,6 +357,29 @@ async getAllProducts() {
         console.log(error);
       });
   },
+
+  async getUsers() {
+  await axios
+  .get('/api/v1/users/')
+  .then(response => {
+            this.users = response.data       
+        })
+    
+        .catch(error => {
+            console.log(error)
+        })
+    },
+    async getAllCategories() {
+    await axios
+      .get("/api/v1/admin/categories/")
+      .then((response) => {
+        this.categories = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  },
+
     async addCategory(data) {
     const formData = new FormData();
     formData.append('name', data.name);
@@ -450,6 +485,35 @@ async getAllProducts() {
 </script>
 
 <style lang="scss" scoped>
+.first-graphic{
+  margin-bottom: 50px;
+}
+.graphics{
+  background-color: #f4f4f4;
+}
+.stat_item__text{
+  margin: 12px;
+  color: #888888;
+}
+.stat_item__info{
+  color: black;
+}
+
+.main-stat {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 30px;
+  
+}
+.main-stat_item {
+  width: 200px;
+  height: 70px;
+  background-color: #F4F4F4;
+  margin-right: 15px;
+  text-align: left;
+}
+
 .order-info__item_show-btn{
   width: 50%;
   text-align: end;
