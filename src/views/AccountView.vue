@@ -13,7 +13,7 @@
             <div class="order-status">Статус:<br><strong>{{ order.status }}</strong></div>
             <div class="order-amount">Сумма заказа:<br> <strong>{{ order.paid_amount }} руб.</strong></div>
             <div class="show-more" @click="toggleOrderInfo(index)">
-              <img src="@/assets/icons/arrow-down.svg">
+              <img src="@/assets/icons/arrow-down.svg" :class="{ 'rotated': orders[index].isRotated }" >
             </div>
           </div>
           <div v-if="order.showInfo" class="orders-info-block"  v-bind:class="{ show: order.showInfo }">
@@ -68,15 +68,20 @@
               <div class="main-stat_item"><p class="stat_item__text">ПОЛЬЗОВАТЕЛИ:</p><p class="stat_item__text stat_item__info">{{users.length}} клиентов</p></div>
               <div class="main-stat_item"><p class="stat_item__text">ПРОДАЖИ:</p><p class="stat_item__text stat_item__info">{{sumOfAllOrders}} руб.</p></div>
             </div>
+            <div class="all-graphs">
+              <div class="graphics-background first-graphic">
+                <LineChart />
+              </div>
 
-            <div class="graphics first-graphic">
-              <LineChart />
-            </div>
+              <div class="graphics-background second-graphic">
+                <BarChart />
+              </div>
 
-            <div class="graphics second-graphic">
-              <BarChart />
-            </div>
-
+              <div class="graphics-background third-graphic">
+                <LineForecast />
+              </div>
+              
+          </div>
         </div>
       </div>
       <div v-show="activeTab === 'products'">
@@ -215,6 +220,7 @@ import CreateProduct from '@/components/CreateProductModal.vue'
 import PutProduct from '@/components/PutProductModal.vue'
 import BarChart from '@/components/SalesYear.vue'
 import LineChart from '@/components/SalesMonth.vue'
+import LineForecast from '@/components/SalesForecast.vue'
 
 export default {
   name: 'AccountView',
@@ -242,7 +248,8 @@ export default {
             CreateProduct,
             PutProduct,
             BarChart,
-            LineChart
+            LineChart,
+            LineForecast
         },
   mounted() {
     
@@ -274,6 +281,7 @@ export default {
   },
     toggleOrderInfo(index) {
       this.orders[index].showInfo = !this.orders[index].showInfo;
+      this.orders[index].isRotated = !this.orders[index].isRotated;
     },
     toggleDetails(index) {
     this.showDetails[index] = !this.showDetails[index];
@@ -289,7 +297,7 @@ export default {
         this.$router.push('/')
         setTimeout(function() {
           location.reload();
-        }, 100);
+        }, 10);
 
       })
       .catch(error => {
@@ -398,7 +406,6 @@ async getAllProducts() {
       console.log('Категория успешно добавлена!');
       console.log(response.data);
     } catch (error) {
-      // Обработка ошибки.
       console.error('Ошибка при добавлении категории:', error);
     }
   },
@@ -485,13 +492,29 @@ async getAllProducts() {
 </script>
 
 <style lang="scss" scoped>
-.first-graphic{
+.rotated {
+  transform: rotate(180deg);
+  transition: all 0.3s ease;
+}
+.all-graphs {
+ max-width: 1424px;
+ margin: 0 auto;
+}
+.first-graphic {
   margin-bottom: 50px;
 }
-.graphics{
+.second-graphic {
+  margin-bottom: 50px;
+}
+.third-graphic {
+  margin-bottom: 50px;
+  margin-top: -150px;
+  min-height: 710px;
+}
+.graphics-background {
   background-color: #f4f4f4;
 }
-.stat_item__text{
+.stat_item__text {
   margin: 12px;
   color: #888888;
 }
@@ -574,6 +597,7 @@ async getAllProducts() {
   max-width: 10px;
   margin-right: 100px;
 }
+
 .order-item-img{
   max-width: 95px;
   max-height: 110px;

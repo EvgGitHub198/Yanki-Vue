@@ -10,7 +10,7 @@
     <div class="list-categories containercontainer">
       <div class="swiper-container ">
         <h2 class="category-header">Категории</h2>
-        <swiper
+        <swiper style="max-width: 1140px;"
           parallax
           grabCursor
           class="parallax-slider"
@@ -83,12 +83,13 @@ export default {
 <style lang="scss" scoped>
 
 .swiper-button-next, .swiper-button-prev {
-  color: white;
+  color: black;
 
 }
 
 .new-line{
   width: 33%;
+  z-index: 1;
 
 }
 .container {
@@ -104,7 +105,7 @@ export default {
   margin-bottom: 10px;
 }
 .category-header{
-  text-align: left;
+  text-align: center;
   font-style: normal;
   font-weight: 300;
   font-size: 36px;

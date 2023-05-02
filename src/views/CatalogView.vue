@@ -27,7 +27,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </template>
   
@@ -46,7 +45,7 @@ import axios from 'axios';
     },
     mounted() {
       axios
-        .get('api/v1/categories')
+        .get('api/v1/categories/')
         .then((response) => {
           this.categories = response.data;
         })
@@ -77,16 +76,13 @@ import axios from 'axios';
 <style lang="scss" scoped>
 .container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin: 0 auto;
-  padding: 50px 0;
+  justify-content: center;
+  flex-grow: 1;
+
 }
 
 .categories {
-  width: 15%;
-  margin-left: 100px;
-  margin-right: auto;
+  min-width: 200px;
 }
 
 .categories ul {
@@ -107,8 +103,7 @@ import axios from 'axios';
 }
 
 .products {
-  width: 70%;
-  margin-right: 100px;
+  max-width: 1700px;
 }
 
 .products h2 {
@@ -118,7 +113,7 @@ import axios from 'axios';
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 30px;
 }
 
 .product {
@@ -155,8 +150,12 @@ import axios from 'axios';
   color: #888;
 }
 .catalog {
-  margin-top: 30px;
+  margin-top: 70px;
   min-height: 100vh;
+  margin-left: 7%;
+  margin-right: 7%;
+  display: flex;
+
 }
 .price{
   font-weight: bold;

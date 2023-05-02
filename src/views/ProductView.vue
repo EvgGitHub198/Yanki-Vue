@@ -25,7 +25,7 @@
       </select>
     </div>
       <div class="product-buttons">
-        <button class="button1" @click="addToCart">В корзину</button>
+        <button class="button1" @click="addToCart">В КОРЗИНУ</button>
         <button class="button2" @click="addToWish"><img src="@/assets/icons/in-wish-list.svg"> {{ wishButtonText }}</button>
     </div>
     <div class="product-description">
@@ -35,7 +35,49 @@
   </p>
   <pre class="product-description" v-if="showDescription">{{ product.description }}</pre>
 </div>
+
   </div>
+
+  <div class="extra-block">
+    <h2>Дополните образ</h2>
+      <div class="additional">  
+        <div v-for="(random_product, index) in random_products" :key="random_product.id">
+            <router-link :to="'/catalog'+random_product.get_absolute_url" class="product-items" >
+              <img :src="config.BACKEND_URL+random_product.main_image">
+              <div class="product-details">
+                <p class="name">{{ random_product.name }}</p>
+                <p class="price">{{ random_product.price }} руб.</p>
+                <p class="sizes">
+                  {{ random_product.sizes.map(size => `${size.size}`).join(" ") }}
+                </p>
+              </div>
+            </router-link>
+        </div>
+      </div>
+  </div>
+
+
+  <div class="extra-block">
+    <h2>Недавно смотрели</h2>
+      <div class="additional">  
+        <div v-for="(product, index) in recentProducts" :key="product.id">
+            <router-link :to="'/catalog'+product.get_absolute_url" class="product-items" >
+              <img :src="product.main_image">
+              <div class="product-details">
+                <p class="name">{{ product.name }}</p>
+                <p class="price">{{ product.price }} руб.</p>
+                <p class="sizes">
+                  {{ product.sizes.map(size => `${size.size}`).join(" ") }}
+                </p>
+              </div>
+            </router-link>
+        </div>
+      </div>
+  </div>
+
+
+
+
   </div>
 </template>
 
@@ -58,6 +100,8 @@ data() {
   return {
   product: {},
   quantity: 1,
+  random_products: [],
+  recentProducts: [],
   showDescription: true,
   config: {
       BACKEND_URL: BACKEND_URL
@@ -83,66 +127,106 @@ computed: {
   },
   wishButtonText() {
     const index = this.$store.state.wishes.findIndex(item => item.id === this.product.id);
-    return index > -1 ? 'Удалить' : 'В избранное';
+    return index > -1 ? 'УДАЛИТЬ' : 'В ИЗБРАННОЕ';
   },
 },
 mounted() {
-  this.getProduct();
+  this.getProduct()
+  this.getRandomProducts()
+  this.loadRecentProducts();
 },
+watch: {
+  $route(to, from) {
+    this.getProduct();
+  }
+},
+
 methods: {
+  async loadRecentProducts() {
+      const recentProducts = JSON.parse(localStorage.getItem('recentProducts')) || [];
+      const promises = recentProducts.map(productId => axios.get(`/api/v1/admin/products/${productId}/`));
+      const responses = await Promise.all(promises);
+      this.recentProducts = responses.map(response => response.data);
+    },
+  saveRecentProduct(productId) {
+      let recentProducts = JSON.parse(localStorage.getItem('recentProducts')) || [];
+
+      // Проверяем, есть ли уже такой товар в списке недавно просмотренных
+      if (!recentProducts.includes(productId)) {
+        // Если товаров больше 4, удаляем самый старый
+        if (recentProducts.length >= 4) {
+          recentProducts.shift();
+        }
+        recentProducts.push(productId);
+        localStorage.setItem('recentProducts', JSON.stringify(recentProducts));
+      }
+    },
+  
+  async getRandomProducts() {
+        await axios
+            .get('api/v1/random-products/')
+            .then(response => {
+                this.random_products = response.data   
+            })
+            
+            .catch(error => {
+                console.log(error)
+            })
+    },
   async getProduct() {
   const category_slug = this.$route.params.category_slug;
   const product_slug = this.$route.params.product_slug;
   await axios
-      .get(`api/v1/products/${category_slug}/${product_slug}`)
+      .get(`api/v1/products/${category_slug}/${product_slug}/`)
       .then(response => {
       this.product = response.data;
       document.title = 'Yanki | ' + this.product.name;
+      this.saveRecentProduct(this.product.id);
       })
       .catch(error => {
       console.log(error);
       });
   },
   addToCart() {
-  if (!this.selectedSize || !this.product.id) {
-    this.toast.error('Вы должны выбрать размер');
-    return;
-  }
-  const cartItem = {
-    quantity: 1,
-    size: this.selectedSize,
-    product: this.product,
-  };
-  const cartItems = this.$store.state.cart.items;
-  const existingItem = cartItems.find(item => item.size === cartItem.size && item.product.id === cartItem.product.id);
-  if (existingItem) {
-    existingItem.quantity++;
-  } else {
-    cartItems.push(cartItem);
-  }
-  this.$store.commit('updateCart', cartItems);
-  this.toast.success('Товар добавлен в корзину');
+    if (!this.selectedSize || !this.product.id) {
+      this.toast.error('Вы должны выбрать размер');
+      return;
+    }
+    const cartItem = {
+      quantity: 1,
+      size: this.selectedSize,
+      product: this.product,
+    };
+    const cartItems = this.$store.state.cart.items;
+    const existingItem = cartItems.find(item => item.size === cartItem.size && item.product.id === cartItem.product.id);
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      cartItems.push(cartItem);
+    }
+    this.$store.commit('updateCart', cartItems);
+    this.toast.success('Товар добавлен в корзину');
+    },
+    addToWish() {
+    if (!this.product.id) {
+      return;
+    }
+    const wishItem = {
+      id: this.product.id,
+      name: this.product.name,
+      price: this.product.price,
+      main_image: this.product.main_image,
+      url: this.product.get_absolute_url,
+    };
+    const index = this.$store.state.wishes.findIndex(item => item.id === wishItem.id);
+    if (index > -1) {
+      this.$store.commit('removeFromWishList', index);
+      this.toast.info('Товар удален из избранного');
+    } else {
+      this.$store.commit('addToWishList', wishItem);
+      this.toast.info('Товар добавлен в избранное');
+    }
   },
-  addToWish() {
-  if (!this.product.id) {
-    return;
-  }
-  const wishItem = {
-    id: this.product.id,
-    name: this.product.name,
-    price: this.product.price,
-    main_image: this.product.main_image,
-    url: this.product.get_absolute_url,
-  };
-  const index = this.$store.state.wishes.findIndex(item => item.id === wishItem.id);
-  if (index > -1) {
-    this.$store.commit('removeFromWishList', index);
-    this.toast.info('Товар удален из избранного');
-  } else {
-    this.$store.commit('addToWishList', wishItem);
-    this.toast.info('Товар добавлен в избранное');
-  }
-},
 
   changeMainImage(index) {
   this.currentIndex = index;
@@ -167,6 +251,61 @@ methods: {
 
 
 <style lang="scss" scoped>
+.product-details p {
+  line-height: 0.5;
+}
+
+.sizes{
+  color: #888;
+  font-style: light;
+  
+}
+.extra-block {
+  margin-top: 40px;
+  
+}
+
+.extra-block h2 {
+  text-align: left;
+  text-decoration: none;
+}
+.additional {
+  display: flex;
+  flex-direction: row; /* added to display the products in a single row */
+  justify-content: space-between; /* added to distribute the products evenly */
+  align-items: center;
+
+}
+.product-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 275px;
+  margin-right: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #000;
+}
+.product-items img {
+  width: 100%;
+  height: auto;
+
+}
+.product-details {
+  text-align: center;
+}
+.product-details p {
+  font-size: 16px;
+  font-style: light;
+
+
+}
+.product-details .price {
+  font-weight: bold;
+}
+
+
+
 
 .images-container {
   display: flex;
@@ -203,6 +342,7 @@ methods: {
   margin-left: 7%;
   margin-right: 7%;  
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .image-controls {
@@ -284,8 +424,8 @@ select {
   border: none;
   background-color: #E0BEA2;
   color: white;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 16px;
+  font-style: light;
   cursor: pointer;
 }
 
@@ -297,11 +437,13 @@ select {
 
 }
 .product-description{
-  font-size: 18px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 17px;
+  font-family: 'Raleway', sans-serif;
+  max-width: 550px;
+  word-break: break-all;
+  white-space: pre-wrap;
 
 }
-
 p.product-description:hover {
   color: #E0BEA2;
   cursor: pointer;

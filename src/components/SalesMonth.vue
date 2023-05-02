@@ -57,7 +57,7 @@ async updateChartDataForDay() {
 
         const chartData = Object.keys(todayData).map(hour => ({
         x: parseInt(hour),
-        y: todayData[hour]
+        y: todayData[hour] 
         }))
         
 

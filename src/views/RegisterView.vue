@@ -95,6 +95,9 @@ export default {
                                 localStorage.setItem('token', token)
                                 this.$store.dispatch('login', token)
                                 this.$router.push('/')
+                                setTimeout(function() {
+                                location.reload();
+                                }, 10);
                             })
                             .catch(error => {
                                 this.errors.push('Невозможно выполнить вход после регистрации.')
