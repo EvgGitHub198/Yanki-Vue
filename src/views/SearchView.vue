@@ -66,7 +66,6 @@
  
 <style lang="scss" scoped>
 .search-page {
-    margin-top: 100px;
     min-height: 100vh;
     margin-left: 10%;
     margin-right: 10%;
@@ -94,6 +93,7 @@
 
 .products {
   width: 100%;
+  margin-bottom: 50px;
 }
 
 .product {
@@ -105,7 +105,8 @@
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 30px;
+  justify-content: center;
   
 }
 .product-items{

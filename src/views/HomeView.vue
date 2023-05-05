@@ -123,6 +123,7 @@ export default {
   background-size: cover;
   background-position: center;
   margin: 0; 
+
 }
 .categories {
   /* Стили для контейнера категорий */
@@ -157,9 +158,10 @@ export default {
 .subscribe {
   padding-top: 30px;
   /* Стили для блока подписки на email-рассылку */
-  margin: 40px auto;
+  margin: 20px auto;
   width: 600px;
   height: 270px;
+  margin-bottom: 50px;
 }
 .sub{
   width: 592px;

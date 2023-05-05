@@ -334,11 +334,10 @@ methods: {
 }
   
 .product-page {
-  margin-top: 100px;
   min-height: 100vh;
   display: flex;
   max-width: 1920px;
-  margin: 100px auto;
+  margin: 20px auto;
   margin-left: 7%;
   margin-right: 7%;  
   justify-content: center;

@@ -1,5 +1,4 @@
 <template>
-       <Header />
     <div class="page-register">
         <div class="reg-form">
             <div class="title">
@@ -25,11 +24,11 @@
                     </div>  
                     <hr>
                     <p>Или нажмите <router-link to="/register">здесь,</router-link> чтобы <strong>зарегистрироваться</strong></p>
+                    <p>Забыли пароль?<router-link to="/reset-password">Восстановить</router-link></p>
                 </form>
             </div>
         </div>
     </div>
-    <Footer />
 </template>
 
 
@@ -71,9 +70,9 @@ export default {
             .catch(error => {
                         if (error.response) {
                             for (const property in error.response.data) {
-                                this.errors.push(`${property}: ${error.response.data[property]}`)
+                                this.errors.push(`${error.response.data[property]}`)
                             }
-                            console.log(JSON.stringify(error.response.data))
+                            
                         }
                         else if (error.message) {
                             this.errors.push('Что-то пошло не так. Повторите!')

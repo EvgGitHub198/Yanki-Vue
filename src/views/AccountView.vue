@@ -714,16 +714,18 @@ async getAllProducts() {
 }
 
 .account-page {
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 100px;
+  margin-left: 7%;
+  margin-right: 7%;
+  margin-top: 20px;
   min-height: 100vh;
+  margin-bottom: 50px;
 }
 .admin-page {
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 100px;
+  margin-left: 7%;
+  margin-right: 7%;
+  margin-top: 20px;
   min-height: 100vh;
+  margin-bottom: 50px;
 }
 .tab-btn {
   width: 200px;

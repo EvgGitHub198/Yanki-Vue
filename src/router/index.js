@@ -11,65 +11,102 @@ import CartView from '../views/CartView.vue'
 import WishListView from '../views/WishListView.vue'
 import SearchView from '../views/SearchView.vue'
 import SuccessView from '../views/SuccessView.vue'
+import ResetPasswordView from '../views/ResetPasswordView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: {
+      breadcrumb: 'Главная',
+    },
+    
   },
   {
     path: '/catalog',
     name: 'catalog',
-    component: CatalogView
+    component: CatalogView,
+    meta: {
+      breadcrumb: 'Каталог',
+    },
   },
   {
     path: '/login',
     name: 'login',
-    component: LogInView
+    component: LogInView,
+    meta: {
+      breadcrumb: 'Вход',
+    },
   },
+  
   {
     path: '/register',
     name: 'register',
-    component: RegisterView
+    component: RegisterView,
+    meta: {
+      breadcrumb: 'Регистрация',
+    },
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: ResetPasswordView,
+    meta: {
+      breadcrumb: 'Восстановление пароля',
+    },
   },
   {
     path: '/about',
     name: 'about',
-    component: AboutView
+    component: AboutView,
+    meta: {
+      breadcrumb: 'О нас',
+    },
   },
   {
     path: '/cart',
     name: 'cart',
-    component: CartView
+    component: CartView,
+    meta: {
+      breadcrumb: 'Корзина',
+    },
   },
   {
     path: '/cart/success',
     name: 'success',
-    component: SuccessView
+    component: SuccessView,
   },
   {
     path: '/wish',
     name: 'wish',
-    component: WishListView
+    component: WishListView,
+    meta: {
+      breadcrumb: 'Избранное',
+    },
   },
   {
     path: '/search',
     name: 'search',
-    component: SearchView
+    component: SearchView,
+    meta: {
+      breadcrumb: 'Поиск',
+    },
   },
   {
     path: '/account',
     name: 'account',
     component: AccountView,
     meta: {
-      requireLogin: true
+      requireLogin: true,
+      breadcrumb: 'Личный кабинет',
     }
   },
   {
     path: '/catalog/:category_slug',
     name: 'category',
-    component: CategoryView
+    component: CategoryView,
+    
   },
   {
     path: '/catalog/:category_slug/:product_slug',

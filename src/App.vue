@@ -2,6 +2,7 @@
   <div>
     <Loading :loading="loading" />
     <Header />
+    <Breadcrumbs />
     <router-view />
     <Footer />
   </div>
@@ -12,13 +13,16 @@ import axios from 'axios'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import Loading from '@/components/Loading.vue';
+import Breadcrumbs from './components/Breadcrumbs.vue';
+
 
 export default {
   name: 'App',
   components: {
     Header,
     Footer,
-    Loading
+    Loading,
+    Breadcrumbs
   },
   data() {
     return {

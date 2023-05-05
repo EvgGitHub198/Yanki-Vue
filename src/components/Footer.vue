@@ -1,14 +1,14 @@
 <template>
   <footer class="footer">
     <div class="footer-column">
-      <h3>Компания</h3>
+      <h3>КОМПАНИЯ</h3>
       <ul>
         <li><a href="#">О нас</a></li>
         <li><a href="#">Контакты</a></li>
       </ul>
     </div>
     <div class="footer-column">
-      <h3>Полезное</h3>
+      <h3>ПОЛЕЗНОЕ</h3>
       <ul>
         <li><a href="#">Оплата и доставка</a></li>
         <li><a href="#">Условия возврата</a></li>
@@ -16,7 +16,7 @@
       </ul>
     </div>
     <div class="footer-column">
-      <h3>Покупателю</h3>
+      <h3>ПОКУПАТЕЛЮ</h3>
       <ul>
         <li><a href="#">Избранное</a></li>
         <li><a href="#">Публичная оферта</a></li>
@@ -24,9 +24,12 @@
       </ul>
     </div>
     <div class="footer-column">
-      <h3>Контакты</h3>
+      <h3>КОНТАКТЫ</h3>
       <ul>
-        <li>+79123123123</li>
+        <li><a href="#"><img src="@/assets/icons/tg.svg"></a>
+            <a href="#"><img src="@/assets/icons/tg.svg"></a>
+        </li>
+        <li>+7(912)-312-31-23</li>
         <li>ex@example.com</li>
       </ul>
     </div>
@@ -41,19 +44,21 @@
 
 <style lang="scss">
 
-// это алиас означающий указ на src/
-
-
 .footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  background-color: #f2f2f2;
-  padding: 30px;
-}
+  max-width: 1920px;
+  margin: 0 auto;
 
+}
+.footer-column li {
+  height: 10px;
+
+}
 .footer-column {
-  width: 23%;
+  width: 25%;
+
 }
 
 .footer-column h3 {
@@ -69,7 +74,7 @@
 }
 
 .footer-column li {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .footer-column a {
@@ -78,12 +83,12 @@
 }
 
 .footer-column a:hover {
-  color: #e31b6d;
+  color: #E0BEA2;
 }
 .notification {
   margin-top: 8px;
-
   margin: 0 auto;
+
 }
 .rights {
   font-size: 12px;

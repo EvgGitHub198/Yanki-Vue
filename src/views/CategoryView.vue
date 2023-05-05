@@ -29,6 +29,16 @@
           </router-link>
         </div>
       </div>
+      <div class="paginatin-block">
+          <ul class="pagination">
+            <li v-for="pageNumber in totalPages"
+             :key="pageNumber" 
+             @click="paginate(pageNumber - 1); scrollToTop()"
+             :class="{ 'active': pageNumber - 1 === currentPage }">
+              {{ pageNumber }}
+            </li>
+          </ul>
+        </div>
     </div>
     </div>
 
@@ -46,16 +56,51 @@
         category_name: "",
         categories: [],
         products: [],
+        currentPage: 0,
+        perPage: 6,
         config: {
         BACKEND_URL: BACKEND_URL
       }
       };
     },
     mounted() {
+      this.updatePerPage();
+      window.addEventListener("resize", this.updatePerPage);
       this.loadCategory();
       this.loadCategories();
+      
     },
+    computed: {
+    paginatedProducts() {
+      const start = this.currentPage * this.perPage;
+      const end = (this.currentPage + 1) * this.perPage;
+      return this.products.slice(start, end);
+    },
+
+    totalPages() {
+      return Math.ceil(this.products.length / this.perPage);
+    },
+  },
     methods: {
+      paginate(pageNumber) {
+        this.currentPage = pageNumber;
+      },
+      scrollToTop() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      },
+      updatePerPage() {
+        const width = window.innerWidth;
+        if (width > 2175) {
+          this.perPage = 15;
+        } else if (width > 1382) {
+          this.perPage = 12;
+        } else {
+          this.perPage = 6;
+        }
+      },
       loadCategory() {
         const category_slug = this.$route.params.category_slug;
         axios
@@ -86,12 +131,40 @@
         this.loadCategory();
       },
     },
+    beforeUnmount() {
+    window.removeEventListener("resize", this.updatePerPage);
+  },
+    
   };
   </script>
   
 
   
 <style lang="scss" scoped>
+.paginatin-block {
+  float: left;
+  margin-bottom: 50px;
+}
+ul.pagination {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+ul.pagination li  {
+    display: inline;
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 10px;
+    margin: 1px;
+    background-color: #dfdfdf;
+}
+ul.pagination li.active {
+    background-color: #E0BEA2;
+    color: white;
+}
 .container {
   display: flex;
   justify-content: center;
@@ -134,7 +207,7 @@
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
   gap: 30px;
   
 }

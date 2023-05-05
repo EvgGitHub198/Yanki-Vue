@@ -405,9 +405,8 @@ margin-bottom: 0;
 }
 .cart-page{
   width: 80%;
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: 70px;
+  margin-left: 7%;
+  margin-right: 7%;
   min-height: 100vh;
 }
 .total {
