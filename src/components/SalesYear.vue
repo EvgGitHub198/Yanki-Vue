@@ -11,6 +11,8 @@
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 import moment from 'moment'
+import { BACKEND_URL } from '@/config.js';
+
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -23,7 +25,7 @@ export default {
   }),
   async mounted() {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/v1/admin/orders/chart/')
+      const response = await fetch(`${BACKEND_URL}/api/v1/admin/orders/chart/`)
       const data = await response.json()
       
       // Создаем объект для хранения суммы за каждый месяц

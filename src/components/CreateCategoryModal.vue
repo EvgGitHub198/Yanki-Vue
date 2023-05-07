@@ -42,7 +42,7 @@ export default {
       show: false,
       categoryName: '',
       categorySlug: '',
-      files: null
+      files: null,
     }
   },
   methods: {

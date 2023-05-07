@@ -144,13 +144,12 @@ watch: {
 methods: {
   async loadRecentProducts() {
       const recentProducts = JSON.parse(localStorage.getItem('recentProducts')) || [];
-      const promises = recentProducts.map(productId => axios.get(`/api/v1/admin/products/${productId}/`));
+      const promises = recentProducts.map(productId => axios.get(`/api/v1/products_id/${productId}/`));
       const responses = await Promise.all(promises);
       this.recentProducts = responses.map(response => response.data);
     },
   saveRecentProduct(productId) {
       let recentProducts = JSON.parse(localStorage.getItem('recentProducts')) || [];
-
       // Проверяем, есть ли уже такой товар в списке недавно просмотренных
       if (!recentProducts.includes(productId)) {
         // Если товаров больше 4, удаляем самый старый
@@ -337,7 +336,7 @@ methods: {
   min-height: 100vh;
   display: flex;
   max-width: 1920px;
-  margin: 20px auto;
+  margin: 50px auto;
   margin-left: 7%;
   margin-right: 7%;  
   justify-content: center;

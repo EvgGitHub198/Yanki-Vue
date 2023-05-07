@@ -106,12 +106,18 @@ const routes = [
     path: '/catalog/:category_slug',
     name: 'category',
     component: CategoryView,
+    meta: {
+      breadcrumb: 'Каталог',
+    }
     
   },
   {
     path: '/catalog/:category_slug/:product_slug',
     name: 'product',
-    component: ProductView
+    component: ProductView,
+    meta: {
+      breadcrumb: 'Каталог',
+    }
   }
 
 

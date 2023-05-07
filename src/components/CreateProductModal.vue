@@ -71,6 +71,11 @@
                 <div class="size" :class="{ 'selected': selectedSizes.includes('XXL') }" @click="toggleSize('XXL')">XXL<input class="quantity-input" type="text" v-model="selectedSizesQuantity.XXL"></div>
             </div>
 
+            <div class="error" v-if="errors" v-for="error in errors">
+              {{ error }}
+              <br />
+            </div>
+
             <div class="text">   
                 <textarea cols="30" rows="10" placeholder="Описание" class="description" name="description" v-model="productDescription"></textarea>
             </div>
@@ -105,6 +110,8 @@ export default {
         selectedSizes: [],
         selectedSizesQuantity: {},
         categories: [],
+        errors: null,
+       
     }
     },
   mounted(){
@@ -159,7 +166,7 @@ export default {
       size,
       quantity: this.selectedSizesQuantity[size]
     }));
-  
+
     const data = new FormData();
     data.append('main_image', this.$refs.productMainImageInput.files[0]);
     data.append('name', this.productName);
@@ -199,6 +206,8 @@ export default {
         })
         .catch(error => {
         console.log(error);
+        // this.errors = Object.values(error.response.data).map(el=>el[0]);
+        this.errors = Object.entries(error.response.data).map(el=>el[0] + ' - ' + el[1])
         });
     },
 
@@ -245,11 +254,6 @@ label {
   align-items: center;
 }
 
-
-
-
-
-
 .size {
   width: 65px;
   height: 30px;
@@ -278,9 +282,10 @@ label {
     position: fixed;
     top: 0;
     left: 0;
-    min-height: 100%;
+    min-height: 100vh;
     width: 100%;
     background: rgba(0, 0, 0, 0.39);
+    z-index: 9999;
 }
 
 .modal {
@@ -343,6 +348,12 @@ label {
             
         }
     }
+}
+.error {
+  color: red;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 14px;
 }
 .description{
     width: 550px;

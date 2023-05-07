@@ -13,6 +13,7 @@
   <script>
   import { Line } from 'vue-chartjs'
   import moment from 'moment'
+  import { BACKEND_URL } from '@/config.js';
   
   export default {
     name: 'LineForecast',
@@ -29,7 +30,7 @@
     methods: {
       async updateChartDataForYear() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/v1/admin/orders/year-forecast/')
+          const response = await fetch(`${BACKEND_URL}/api/v1/admin/orders/year-forecast/`);
           const data = await response.json()
   
           const chartData = {
@@ -52,7 +53,7 @@
   
       async updateChartDataForMonth() {
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/v1/admin/orders/month-forecast/')
+          const response = await fetch(`${BACKEND_URL}/api/v1/admin/orders/month-forecast/`)
           const data = await response.json()
   
           const chartData = {

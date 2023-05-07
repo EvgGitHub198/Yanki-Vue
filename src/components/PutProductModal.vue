@@ -69,6 +69,8 @@
                 <div class="size" :class="{ 'selected': selectedSizes.includes('XXL') }" @click="toggleSize('XXL')">XXL<input class="quantity-input" type="text" v-model="selectedSizesQuantity.XXL"></div>
             </div>
 
+ 
+
             <div class="text">   
                 <textarea placeholder="Описание" class="description" name="description" v-model="productDescription"></textarea>
             </div>
@@ -111,7 +113,7 @@ export default {
         selectedSizes: [],
         selectedSizesQuantity: {},
         categories: [],
-     
+    
     }
     },
     
@@ -226,19 +228,20 @@ export default {
         }
     },
     
-
-
-
-
-
-
   },
+  
 
 }
 </script>
 
 
 <style lang="scss" scoped>
+.error {
+  color: red;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
 
 .file-upload {
   justify-content: space-between;
@@ -298,6 +301,7 @@ label {
     min-height: 100%;
     width: 100%;
     background: rgba(0, 0, 0, 0.39);
+    z-index: 9999;
 }
 
 .modal {

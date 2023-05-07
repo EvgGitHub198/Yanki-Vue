@@ -19,7 +19,7 @@
           <div v-if="order.showInfo" class="orders-info-block"  v-bind:class="{ show: order.showInfo }">
                 <div class="items-table">
                   <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
-                    <div class="item-info"><img class="order-item-img" :src="'http://127.0.0.1:8000'+item.product.main_image"></div>
+                    <div class="item-info"><img class="order-item-img" :src="config.BACKEND_URL+item.product.main_image"></div>
                     <div class="item-info"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
                     <div class="item-info">Размер: {{ item.size }}</div>
                     <div class="item-info">Количество: {{ item.quantity }}</div>
@@ -36,7 +36,6 @@
               <div class="column">
                 <div class="order-detail"><strong>Адрес: </strong>{{ order.address }}</div>
                 <div class="order-detail"><strong>Индекс: </strong>{{ order.zipcode }}</div>
-                <div class="order-detail"><strong>Способ доставки: </strong>later</div>
               </div>
             </div>
         </div>
@@ -112,6 +111,7 @@
         <div class="admin-products-block">
           <button class="tab-btn add-btn" @click="showAddModal">Добавить категорию</button>
           <CreateCategory @add-category="addCategory" ref="addmodal"></CreateCategory>
+          
           <div class="items-table">
               <div class="items-category-row admin-rows category-rows" v-for="category in categories" :key="category.id">
                 
@@ -152,7 +152,7 @@
               <div class="orders-info-block__admin" v-show="showDetails[index]">
                 <div>
                   <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
-                    <div class="order-info__item"><img class="order-item-img" :src="'http://127.0.0.1:8000'+item.product.main_image"></div>
+                    <div class="order-info__item"><img class="order-item-img" :src="config.BACKEND_URL+item.product.main_image"></div>
                     <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
                     <div class="order-info__item">Размер: {{ item.size }}</div>
                     <div class="order-info__item">Количество: {{ item.quantity }}</div>
@@ -189,7 +189,7 @@
               <div class="orders-info-block__admin" v-show="showDetails[index]">
                 <div>
                   <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
-                    <div class="order-info__item"><img class="order-item-img" :src="'http://127.0.0.1:8000'+item.product.main_image"></div>
+                    <div class="order-info__item"><img class="order-item-img" :src="config.BACKEND_URL+item.product.main_image"></div>
                     <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
                     <div class="order-info__item">Размер: {{ item.size }}</div>
                     <div class="order-info__item">Количество: {{ item.quantity }}</div>
@@ -221,9 +221,12 @@ import PutProduct from '@/components/PutProductModal.vue'
 import BarChart from '@/components/SalesYear.vue'
 import LineChart from '@/components/SalesMonth.vue'
 import LineForecast from '@/components/SalesForecast.vue'
+import { BACKEND_URL } from '@/config.js';
+
 
 export default {
   name: 'AccountView',
+
   data() {
     return {
       isAdmin: false,
@@ -238,6 +241,10 @@ export default {
       editProductData: null,
       showDetails: [],
       isSending: false,
+      errors: null,
+      config: {
+        BACKEND_URL: BACKEND_URL
+      }
       
       
     }
@@ -333,6 +340,7 @@ async getMyOrders() {
     },
 
 async getAllOrders() {
+  if (this.isAdmin){
     await axios
         .get('/api/v1/admin/orders/')
         .then(response => {
@@ -341,9 +349,10 @@ async getAllOrders() {
         .catch(error => {
             console.log(error)
         })
-},
+}},
 
 async getAllProducts() {
+  if (this.isAdmin) {
   await axios
   .get('/api/v1/admin/products/')
   .then(response => {
@@ -354,7 +363,7 @@ async getAllProducts() {
         .catch(error => {
             console.log(error)
         })
-    },
+    }},
     async getAllCategories() {
     await axios
       .get("/api/v1/admin/categories/")
@@ -367,6 +376,7 @@ async getAllProducts() {
   },
 
   async getUsers() {
+    if (this.isAdmin){
   await axios
   .get('/api/v1/users/')
   .then(response => {
@@ -376,8 +386,9 @@ async getAllProducts() {
         .catch(error => {
             console.log(error)
         })
-    },
+    }},
     async getAllCategories() {
+    if (this.isAdmin){
     await axios
       .get("/api/v1/admin/categories/")
       .then((response) => {
@@ -386,8 +397,7 @@ async getAllProducts() {
       .catch((error) => {
         console.log(error);
       });
-  },
-
+  }},
     async addCategory(data) {
     const formData = new FormData();
     formData.append('name', data.name);
@@ -407,6 +417,7 @@ async getAllProducts() {
       console.log(response.data);
     } catch (error) {
       console.error('Ошибка при добавлении категории:', error);
+      this.errors = error.response.data;
     }
   },
   async deleteCategory(id) {

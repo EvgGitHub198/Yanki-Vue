@@ -34,55 +34,54 @@
     </div>
     <h2 align="left">Оформление заказа</h2>
 
-<div class="checkout">
-  <div class="left-info">
-    <div class="personal-info">
-  <h3 align="left">Персональные данные</h3>
-  <div class="form-group">
-    <div class="name-email-grid">
-      <input type="text" id="name" placeholder="Ваше ФИО*"  v-model="name">
-      <input type="email" id="email" placeholder="Ваша почта*" v-model="email">
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="phone-grid">
-      <input type="tel" id="phone" placeholder="Ваш номер телефона*" v-model="phone">
-    </div>
-  </div>
-</div>
-    <div class="shipping-method">
-      <h3 align="left">Способ доставки</h3>
-      <h4 align="left">по России:</h4>
-      <div class="selection">
-        <input class="radio" type="radio" id="pickup" name="shipping" value="pickup" checked v-model="selectedShipping">
-        <label for="pickup">Самовывоз - вул. Большая Васильковская 14 (м. Льва Толстого)</label>
-      </div>
-      <div class="selection">
-        <input class="radio" type="radio" id="mail" name="shipping" value="mail" v-model="selectedShipping">
-        <label for="mail">Новая почта</label>
+  <div class="checkout">
+    <div class="left-info">
+      <div class="personal-info">
+    <h3 align="left">Персональные данные</h3>
+    <div class="form-group">
+      <div class="name-email-grid">
+        <input type="text" id="name" placeholder="Ваше ФИО*"  v-model="name">
+        <input type="email" id="email" placeholder="Ваша почта*" v-model="email">
       </div>
     </div>
-    <div class="if-deliviry" v-if="showAddress">
-      <h4 align="left">Адрес доставки:</h4>
-        <div class="form-group">
-        <div class="grid-inputs">
-        <input class="city-grid" type="text" id="name" placeholder="Город*" v-model="address">
-        <input type="tel" placeholder="Отделение почты*" v-model="zipcode">
+    <div class="form-group">
+      <div class="phone-grid">
+        <input type="tel" id="phone" placeholder="Ваш номер телефона*" v-model="phone">
+      </div>
+    </div>
+  </div>
+      <div class="shipping-method">
+        <h3 align="left">Способ доставки</h3>
+        <h4 align="left">по России:</h4>
+        <div class="selection">
+          <input class="radio" type="radio" id="pickup" name="shipping" value="pickup" checked v-model="selectedShipping">
+          <label for="pickup">Самовывоз - вул. Большая Васильковская 14 (м. Льва Толстого)</label>
+        </div>
+        <div class="selection">
+          <input class="radio" type="radio" id="mail" name="shipping" value="mail" v-model="selectedShipping">
+          <label for="mail">Новая почта</label>
+        </div>
+      </div>
+      <div class="if-deliviry" v-if="showAddress">
+        <h4 align="left">Адрес доставки:</h4>
+          <div class="form-group">
+          <div class="grid-inputs">
+          <input class="city-grid" type="text" id="name" placeholder="Город*" v-model="address">
+          <input type="tel" placeholder="Отделение почты*" v-model="zipcode">
+          </div>
+        </div>
+      </div>
+      <div class="payment-method">
+        <h3 align="left">Тип оплаты</h3>
+        <div class="selection">
+          <input class="radio" type="radio" id="on-delivery" name="payment" value="on-delivery" checked>
+          <label for="on-delivery">Наложенным платежом в отделении Новой Почты</label>
         </div>
       </div>
     </div>
-    <div class="payment-method">
-      <h3 align="left">Тип оплаты</h3>
-      <div class="selection">
-        <input class="radio" type="radio" id="on-delivery" name="payment" value="on-delivery" checked>
-        <label for="on-delivery">Наложенным платежом в отделении Новой Почты</label>
-      </div>
-    </div>
-  </div>
-  <div class="right-info">
-    <div class="shipping-info">
-      <div class="links">
-
+    <div class="right-info">
+      <div class="shipping-info">
+        <div class="links">
 
         <template v-if="$store.state.isAuthenticated">
           <p><router-link class="login-link"  to="/account">Личный кабинет</router-link></p>
@@ -119,6 +118,8 @@
 </div>
   </div>
 </template>
+
+
 <script>
 import axios from 'axios';
 import { BACKEND_URL } from '@/config.js';
@@ -158,38 +159,37 @@ mounted() {
   this.showAddress = this.selectedShipping === 'mail';
 },
 methods: {
-removeItem(index) {
-  this.$store.commit('removeItem', index);
-},
-incrementItem(index) {
-    this.$store.commit('incrementItem', index);
-  },
-decrementItem(index) {
-    this.$store.commit('decrementItem', index);
-  },
-  submitOrder() {
+    removeItem(index) {
+      this.$store.commit('removeItem', index);
+    },
+    incrementItem(index) {
+        this.$store.commit('incrementItem', index);
+      },
+    decrementItem(index) {
+        this.$store.commit('decrementItem', index);
+      },
+    submitOrder() {
+    this.errors = [];
 
-            this.errors = []
-            if (this.name === '') {
-                this.errors.push('The name field is missing!')
-           
-            }
-            if (this.email === '') {
-                this.errors.push('The email field is missing!')
-                
-            }
-            if (this.phone === '') {
-                this.errors.push('The phone field is missing!')
-                
-            }
-            if (!this.errors.length) {
-                this.Checkout()
-            }
-            else {
-              this.toast.error('Все поля обязательны!');
-            }
+    if (this.name === '') {
+      this.errors.push('The name field is missing!');
+    }
+    if (this.email === '') {
+      this.errors.push('The email field is missing!');
+    }
+    if (this.phone === '') {
+      this.errors.push('The phone field is missing!');
+    }
 
-        },
+    if (!this.errors.length) {
+      // Отправка запроса на проверку продуктов
+      const productIds = this.cartItems.map(item => item.product.id);
+      this.checkProducts(productIds);
+    } else {
+      this.toast.error('Все поля обязательны!');
+    }
+  },
+
         async Checkout() {
             const items = []
             for (let i = 0; i < this.$store.state.cart.items.length; i++) {
@@ -223,7 +223,23 @@ decrementItem(index) {
                     console.log(error)
                 })
                 
-        }
+        },
+        checkProducts(productIds) {
+  axios
+    .post('/api/v1/check-products/', { products_id: productIds })
+    .then(response => {
+      // Если ответ успешный (статус 200), продолжаем оформление заказа
+      this.Checkout();
+    })
+    .catch(error => {
+      // Если есть ошибка, отобразите сообщение об ошибке
+      console.error(error);
+      this.toast.error('Ошибка проверки наличия продуктов. Удалите несуществующие товары!');
+    });
+},
+
+
+
 },
 watch: {
   selectedShipping() {

@@ -16,6 +16,7 @@
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, LineController, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import moment from 'moment'
+import { BACKEND_URL } from '@/config.js';
 
 ChartJS.register(Title, Tooltip, Legend, LineController, CategoryScale, LinearScale, PointElement, LineElement)
 
@@ -40,7 +41,7 @@ async updateChartDataForDay() {
     this.isDaySelected = true
     this.selectedMonth = null
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/admin/orders/chart/')
+        const response = await fetch(`${BACKEND_URL}/api/v1/admin/orders/chart/`)
         const data = await response.json()
         console.log(data)
         const todayData = {}
@@ -80,9 +81,8 @@ async updateChartDataForDay() {
     async updateChartData() {
         this.isDaySelected = false
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/admin/orders/chart/')
+        const response = await fetch(`${BACKEND_URL}/api/v1/admin/orders/chart/`)
         const data = await response.json()
-
         const monthlyData = {}
         data.forEach(item => {
         const date = moment(item.date)
@@ -93,7 +93,6 @@ async updateChartDataForDay() {
             monthlyData[date.date()] += item.value
         }
         })
-
         const chartData = Object.keys(monthlyData).map(day => ({
         x: parseInt(day),
         y: monthlyData[day]

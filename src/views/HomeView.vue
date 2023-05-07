@@ -33,12 +33,13 @@
       </div>
   </div>
     
-    <div class="subscribe">
-      <h2 class="sub-header">Узнайте  первым о новинках</h2>
-      <input type="email" class="sub" placeholder="e-mail">
-      <button class="sub-btn">ПОДПИСАТЬСЯ</button>
-      <p>Нажимая на кнопку «Подписаться», я соглашаюсь на обработку моих персональных данных и ознакомлен(а) с условиями конфиденциальности.</p>
-    </div>
+  <div class="subscribe">
+    <h2 class="sub-header">Узнайте первыми о новинках</h2>
+    <input type="email" class="sub" placeholder="e-mail" v-model="email" :class="{ 'is-invalid': emailError }">
+    <div v-if="emailError" class="error-message">{{ emailError }}</div>
+    <button class="sub-btn" @click="subscribe">ПОДПИСАТЬСЯ</button>
+    <p>Нажимая на кнопку «Подписаться», я соглашаюсь на обработку моих персональных данных и ознакомлен(а) с условиями конфиденциальности.</p>
+  </div>
 
   </div>
 
@@ -60,6 +61,37 @@ export default {
     Swiper,
     SwiperSlide,
   },
+  methods: {
+    validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.email) {
+        this.emailError = 'Пожалуйста, введите адрес электронной почты.';
+      } else if (!emailPattern.test(this.email)) {
+        this.emailError = 'Пожалуйста, введите корректный адрес электронной почты.';
+      } else {
+        this.emailError = '';
+      }
+    },
+    subscribe() {
+      this.validateEmail();
+
+      if (!this.emailError) {
+        const requestData = {
+          email: this.email
+        };
+
+        axios.post('/api/v1/subscribe/', requestData)
+          .then(response => {
+            // Обработка успешного ответа от бэкенда
+            console.log(response.data);
+          })
+          .catch(error => {
+            // Обработка ошибки
+            console.log(error);
+          });
+      }
+    }
+  },
   mounted() {
     axios.get('/api/v1/categories/')
       .then(response => {
@@ -72,6 +104,8 @@ export default {
   data() {
     return {
       categories: [],
+      email: '',
+      emailError: ''
 
     }
   },
@@ -81,6 +115,14 @@ export default {
 
 
 <style lang="scss" scoped>
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.is-invalid {
+  border-color: red;
+}
 
 .swiper-button-next, .swiper-button-prev {
   color: black;
@@ -182,6 +224,7 @@ line-height: 42px;
   background-color: #E0BEA2;
   border: 0;
   color: white;
+  cursor: pointer;
 }
 .swiper-container{
   margin-left: 10%;

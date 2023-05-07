@@ -51,25 +51,29 @@
         </div>
       </div>
 
-
-
       </div>
+
 
         <h2>Товары</h2>
         <div class="product-list">
-          <div class="product" v-for="product in paginatedProducts" :key="product.id">
-            <router-link :to="'/catalog'+product.url" class="product-items">
-              <img :src="product.image" :alt="product.name" />
-              <div class="product-details">
-                <p class="name">{{ product.name }}</p>
-                <p class="price">{{ product.price }} руб.</p>
-                <p class="sizes">
-                  {{ product.sizes.map(size => `${size.size}`).join(" ") }}
-                </p>
-              </div>
-            </router-link>
+        <div class="product" v-for="product in paginatedProducts" :key="product.id">
+          <div class="product-wish">
+            <a class="add-to-wish" @click="addToWish(product)">
+              <img :src="isProductInWishlist(product) ? require('@/assets/icons/wish-delete.svg') : require('@/assets/icons/add-to-wish.svg')">
+            </a>
           </div>
+          <a :href="'/catalog'+product.url" class="product-items">
+            <img :src="product.image" :alt="product.name" />
+            <div class="product-details">
+              <p class="name">{{ product.name }}</p>
+              <p class="price">{{ product.price }} руб.</p>
+              <p class="sizes">
+                {{ product.sizes.map(size => `${size.size}`).join(" ") }}
+              </p>
+            </div>
+          </a>
         </div>
+      </div>
         <div class="pagination-block">
           <ul class="pagination">
             <li v-for="pageNumber in totalPages"
@@ -88,11 +92,17 @@
 
 <script>
 import axios from "axios";
+import { useToast } from 'vue-toastification';
+
 
 
 
 export default {
   name: "CatalogView",
+  setup() {
+      const toast = useToast();
+      return { toast }
+    },
 
   data() {
     return {
@@ -118,6 +128,34 @@ export default {
     };
   },
   methods: {
+    isProductInWishlist(product) {
+    const wishes = JSON.parse(localStorage.getItem('wishes')) || [];
+    return wishes.some(item => item.id === product.id);
+    
+  },
+    addToWish(product) {
+    if (!product.id) {
+      return;
+    }
+    
+    const wishItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      main_image: (product.image).substring(product.image.indexOf('/media')),
+      url: product.url
+    };
+    const index = this.$store.state.wishes.findIndex(item => item.id === wishItem.id);
+    if (index > -1) {
+      this.$store.commit('removeFromWishList', index);
+      this.toast.info('Товар удален из избранного');
+    } else {
+      this.$store.commit('addToWishList', wishItem);
+      this.toast.info('Товар добавлен в избранное');
+    }
+    window.dispatchEvent(new Event('wishlistChanged'));
+  },
+
     resetPriceInput() {
     if (!this.filters.price.max) {
       this.filters.price.max = null;
@@ -163,52 +201,35 @@ export default {
     },
   },
   computed: {
-    filteredProducts() {
-      let products = this.products;
+      filteredProducts() {
+        let products = this.products;
 
-      // Фильтрация по цене
-      if (this.filters.price.min !== null) {
-        products = products.filter(product => product.price >= this.filters.price.min);
-      }
-      if (this.filters.price.max !== null) {
-        products = products.filter(product => product.price <= this.filters.price.max);
-      }
+        // Фильтрация по цене
+        if (this.filters.price.min !== null) {
+          products = products.filter(product => product.price >= this.filters.price.min);
+        }
+        if (this.filters.price.max !== null) {
+          products = products.filter(product => product.price <= this.filters.price.max);
+        }
 
-      // Фильтрация по размеру
-      if (this.filters.sizes.length > 0) {
-        products = products.filter(product => {
-          const sizes = product.sizes.map(size => size.size);
-          return sizes.some(size => this.filters.sizes.includes(size));
-        });
-      }
-
-      // Сортировка
-      if (this.sort.field === 'price') {
-        products.sort((a, b) => {
-          const diff = a.price - b.price;
-          return this.sort.order === 'asc' ? diff : -diff;
-        });
-      }
-      this.currentPage = 0; 
-      return products;
-    },
-  sortedProducts() {
-    const products = [...this.filteredProducts];
-    const { field, order } = this.sort;
-    products.sort((a, b) => {
-      if (field === 'price') {
-        return order === 'asc'
-          ? a.price - b.price
-          : b.price - a.price;
-      } else {
-        return order === 'asc'
-          ? a[field].localeCompare(b[field])
-          : b[field].localeCompare(a[field]);
-      }
-    });
-    this.currentPage = 0; 
-    return products;
-  },
+        // Фильтрация по размеру
+        if (this.filters.sizes.length > 0) {
+          products = products.filter(product => {
+            const sizes = product.sizes.map(size => size.size);
+            return sizes.some(size => this.filters.sizes.includes(size));
+          });
+        }
+        
+        // Сортировка
+        if (this.sort.field === 'price') {
+          products.sort((a, b) => {
+            const diff = a.price - b.price;
+            return this.sort.order === 'asc' ? diff : -diff;
+          });
+        }
+        this.currentPage = 0; 
+        return products;
+      },
 
     paginatedProducts() {
       const start = this.currentPage * this.perPage;
@@ -223,8 +244,9 @@ export default {
   mounted() {
     this.updatePerPage();
     window.addEventListener("resize", this.updatePerPage);
-    
-
+    window.addEventListener('wishlistChanged', () => {
+    this.$forceUpdate();
+    });
     axios
       .get("api/v1/categories/")
       .then((response) => {
@@ -260,6 +282,25 @@ export default {
 
   
 <style lang="scss" scoped>
+.product-wish {
+  position: relative;
+  display: flex;
+  justify-content: end;
+}
+
+.add-to-wish {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  cursor: pointer;
+}
+.add-to-wish:hover {
+  filter: brightness(115%);
+  transition: all 0.4s ease-in-out;
+
+}
+
 .filter-img {
   margin-right: -25px;
 }

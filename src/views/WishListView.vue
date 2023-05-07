@@ -7,7 +7,7 @@
             <div class="wish-image-container">
             <img class="wish-image" :src="config.BACKEND_URL+wish.main_image" />
             <a class="delete-image" @click.prevent="removeFromWish(index)">
-                <img src="@/assets/icons/wish-delete.svg" alt="Delete">
+                <img src="@/assets/icons/wish-delete.svg" alt="Del">
             </a>
             </div>
             <div class="wish-details">
@@ -95,7 +95,9 @@
 
 }
 .delete-image :hover{
-    color: red;
+  filter: brightness(115%);
+  transition: all 0.4s ease-in-out;
+
 }
 .product-link{
     text-decoration: none;
