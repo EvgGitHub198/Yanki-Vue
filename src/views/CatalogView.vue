@@ -63,7 +63,7 @@
             </a>
           </div>
           <a :href="'/catalog'+product.url" class="product-items">
-            <img :src="product.image" :alt="product.name" />
+            <img :src="product.image" :alt="product.name" class="product-img" />
             <div class="product-details">
               <p class="name">{{ product.name }}</p>
               <p class="price">{{ product.price }} руб.</p>
@@ -282,6 +282,11 @@ export default {
 
   
 <style lang="scss" scoped>
+.product-img {
+  width: 310px;
+  height: 360px;
+  object-fit: cover;
+}
 .product-wish {
   position: relative;
   display: flex;

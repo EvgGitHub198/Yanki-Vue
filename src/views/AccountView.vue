@@ -1,6 +1,5 @@
 <template >
   <template v-if="!isAdmin">
-  
   <div class="account-page">
     <h1 class="title">Мой аккаунт</h1>
     <button @click="logout()" class="tab-btn add-btn">Выйти</button>
@@ -50,10 +49,10 @@
   <template v-else>
     <div class="admin-page">
       <div class="tabs">
-      <button class="tab-btn" @click="activeTab = 'statistics'">Статистика</button>
-      <button class="tab-btn" @click="activeTab = 'products'">Товары</button>
-      <button class="tab-btn" @click="activeTab = 'categories'">Категории</button>
-      <button class="tab-btn" @click="activeTab = 'active-orders'">Заказы</button>
+        <button class="tab-btn" @click="changeTab('statistics')" :class="{ 'active': activeTab === 'statistics' }">Статистика</button>
+        <button class="tab-btn" @click="changeTab('products')" :class="{ 'active': activeTab === 'products' }">Товары</button>
+        <button class="tab-btn" @click="changeTab('categories')" :class="{ 'active': activeTab === 'categories' }">Категории</button>
+        <button class="tab-btn" @click="changeTab('active-orders')" :class="{ 'active': activeTab === 'active-orders' }">Заказы</button>
       <button class="tab-btn" @click="logout()">Выйти</button>
     </div>
     <div class="tab-content">
@@ -127,9 +126,10 @@
 
       </div>
       <div v-show="activeTab === 'active-orders'">
-        <h1>Активные заказы</h1>
-        <button class="tab-btn" @click="activeTab = 'active-orders'">Активные</button>  <!-- Блок с переключениями по табам -->
-        <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button> <!-- Блок с переключениями по табам -->
+        <h1>Новые заказы</h1>
+        <button class="tab-btn" @click="activeTab = 'active-orders'">Новые</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'archive-orders'">Архив</button>
 
         <div v-for="(order, index) in listorders" :key="order.id"  v-show="activeTab === 'active-orders'" >
           <div v-if="order.status === 'В сборке'" class="order-rows">
@@ -166,12 +166,54 @@
       </div>
       <div v-show="activeTab === 'sent-orders'">
         <h1>Отправленные заказы</h1>
-        <button class="tab-btn" @click="activeTab = 'active-orders'">Активные</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'active-orders'">Новые</button><!-- Блок с переключениями по табам -->
         <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'archive-orders'">Архив</button>
         <div v-for="(order, index) in listorders" :key="order.id"  v-show="activeTab === 'sent-orders'" >
           <div v-if="order.status === 'Отправлен'" class="order-rows">
           <div class="order-info_header">
            <div><strong>Заказ №{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div> 
+           <div>
+            <button :disabled="isArchiving || order.sendButtonText === 'Архивирован'" @click="archiveOrder(order.id)" class="info_header_send-btn">{{ isArchiving ? 'Архивирую...' : order.ArchiveButtonText || 'Архивировать' }}</button>
+                <!-- <button class="info_header_send-btn" @click="archiveOrder(order.id)">В архив</button> -->
+                <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>
+          </div>
+          <div class="order-info__admin">
+            <div class="break"></div> <!-- break -->
+            <div class="order-info__item"><strong>Пользователь:</strong><br>{{ order.name}}</div>
+            <div class="order-info__item"><strong>Адрес:</strong><br>{{ order.address}} {{ order.zipcode}}</div>
+            <div class="order-info__item"><strong>Телефон:</strong><br>{{ order.phone}}</div>
+            <div class="order-info__item"><strong>Почта:</strong><br>{{ order.email}}</div>
+            <div class="break"></div> <!-- break -->
+            <div class="order-info__item"><strong>Товаров:</strong><br>{{ order.items.length }}</div>
+            <div class="order-info__item"><strong>Итого:</strong><br>{{ order.paid_amount }} руб.</div>
+            <div class="order-info__item_show-btn"><button class="show-btn" @click="toggleDetails(index)">Подробнее</button></div>
+            <div class="break"></div> <!-- break -->
+              <div class="orders-info-block__admin" v-show="showDetails[index]">
+                <div>
+                  <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
+                    <div class="order-info__item"><img class="order-item-img" :src="config.BACKEND_URL+item.product.main_image"></div>
+                    <div class="order-info__item"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
+                    <div class="order-info__item">Размер: {{ item.size }}</div>
+                    <div class="order-info__item">Количество: {{ item.quantity }}</div>
+                    <div class="order-info__item"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>                                   
+                  </div>
+                </div>          
+              </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div v-show="activeTab === 'archive-orders'">
+        <h1>Архивные заказы</h1>
+        <button class="tab-btn" @click="activeTab = 'active-orders'">Новые</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'sent-orders'">Отправленные</button><!-- Блок с переключениями по табам -->
+        <button class="tab-btn" @click="activeTab = 'archive-orders'">Архив</button>
+        <div v-for="(order, index) in listorders" :key="order.id"  v-show="activeTab === 'archive-orders'" >
+          <div v-if="order.status === 'В архиве'" class="order-rows">
+          <div class="order-info_header">
+           <div><strong>Заказ №{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div> 
+      
            <div>
                 <button class="info_header_delete-btn" @click="deleteOrder(order.id)">Удалить</button></div>
           </div>
@@ -201,6 +243,8 @@
           </div>
         </div>
       </div>
+
+
     </div>
     </div>
   </template>
@@ -236,11 +280,12 @@ export default {
       products: [],
       categories: [],
       date: new Date(),
-      activeTab: 'statistics',
+      activeTab: localStorage.getItem('lastActiveTab') || 'statistics',
       editCategoryData: null,
       editProductData: null,
       showDetails: [],
       isSending: false,
+      isArchiving: false,
       errors: null,
       config: {
         BACKEND_URL: BACKEND_URL
@@ -258,15 +303,21 @@ export default {
             LineChart,
             LineForecast
         },
-  mounted() {
-    
-    document.title = 'My account | Yanki'
-    this.checkIsAdmin()
+async mounted() {
+  await this.checkIsAdmin();
+  if (this.isAdmin) {
+    await Promise.all([
+      this.getMyOrders(),
+      this.getAllProducts(),
+      this.getAllCategories(),
+      this.getAllOrders(),
+      this.getUsers()
+    ]);
+  }
+  else {
     this.getMyOrders()
-    this.getAllProducts()
-    this.getAllCategories()
-    this.getAllOrders()
-    this.getUsers()
+  }
+    
   },
   computed: {
     sumOfAllOrders() {
@@ -275,10 +326,15 @@ export default {
       sum += parseFloat(this.listorders[i].paid_amount);
     }
     return sum;
-  }
+  },
+  
   },
 
   methods: {
+    changeTab(tab) {
+    this.activeTab = tab;
+    localStorage.setItem('lastActiveTab', tab);
+  },
     showAddModal: function () {
       this.$refs.addmodal.show = true
   },
@@ -311,36 +367,28 @@ export default {
         console.log(error)
       })
   },
-checkIsAdmin() {
-  const isAdmin = localStorage.getItem('isAdmin')
-  if (isAdmin !== null) {
-    this.isAdmin = JSON.parse(isAdmin)
-  } else {
-    axios.get('/api/v1/is_admin/')
-      .then(response => {
-        this.isAdmin = response.data.is_admin
-        localStorage.setItem('isAdmin', JSON.stringify(this.isAdmin))
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
-},
-
+ async checkIsAdmin() {
+    await axios
+        .get('/api/v1/is_admin/')
+        .then(response => {
+          this.isAdmin = response.data.is_admin;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
 async getMyOrders() {
         await axios
             .get('/api/v1/my-orders/')
             .then(response => {
                 this.orders = response.data   
             })
-            
             .catch(error => {
                 console.log(error)
             })
     },
-
 async getAllOrders() {
-  if (this.isAdmin){
+   {
     await axios
         .get('/api/v1/admin/orders/')
         .then(response => {
@@ -352,7 +400,7 @@ async getAllOrders() {
 }},
 
 async getAllProducts() {
-  if (this.isAdmin) {
+{
   await axios
   .get('/api/v1/admin/products/')
   .then(response => {
@@ -365,6 +413,7 @@ async getAllProducts() {
         })
     }},
     async getAllCategories() {
+     {
     await axios
       .get("/api/v1/admin/categories/")
       .then((response) => {
@@ -373,10 +422,9 @@ async getAllProducts() {
       .catch((error) => {
         console.log(error);
       });
-  },
-
+  }},
   async getUsers() {
-    if (this.isAdmin){
+ {
   await axios
   .get('/api/v1/users/')
   .then(response => {
@@ -387,17 +435,7 @@ async getAllProducts() {
             console.log(error)
         })
     }},
-    async getAllCategories() {
-    if (this.isAdmin){
-    await axios
-      .get("/api/v1/admin/categories/")
-      .then((response) => {
-        this.categories = response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }},
+
     async addCategory(data) {
     const formData = new FormData();
     formData.append('name', data.name);
@@ -424,6 +462,9 @@ async getAllProducts() {
         try {
           const response = await axios.delete(`/api/v1/admin/categories/${id}/`);
           console.log(response.data);
+          setTimeout(function() {
+          location.reload();
+          }, 10);
         } catch (error) {
           console.log(error);
         }
@@ -484,6 +525,28 @@ async getAllProducts() {
       console.error(error);
     } finally {
       this.isSending = false;
+    }
+  },
+  async archiveOrder(orderId) {
+    this.isArchiving = true;
+    try {
+      await axios.put(`/api/v1/admin/orders/${orderId}/`, {
+        status: 'В архиве',
+      });
+      
+      // Обновляем состояние заказа на клиенте
+      const updatedOrder = this.listorders.find((order) => order.id === orderId);
+      updatedOrder.status = 'В архиве';
+      updatedOrder.ArchiveButtonText = 'Архивирован';
+
+      // Меняем текст кнопки
+      const buttonIndex = this.listorders.findIndex((order) => order.id === orderId);
+      this.$set(this.listorders[buttonIndex], 'ArchiveButtonText', 'Архивирован');
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.isArchiving = false;
     }
   },
   async deleteSize(productId, size) {
@@ -751,6 +814,10 @@ async getAllProducts() {
   background: #E0BEA2;
   transition: 0.7s;
   
+}
+.tab-btn.active {
+  background-color: #E0BEA2;
+  color: #6e81ff;
 }
 .add-btn {
   display: flex;

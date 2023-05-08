@@ -1,6 +1,6 @@
 <template>
+  <h2>Избранное</h2>
     <div class="wish-page">
-      <h2 align="left">Избранное</h2>
       <div v-if="wishes.length" class="wish-card-container">
         <div v-for="(wish, index) in wishes" :key="wish.id" class="wish-card">
           <router-link class="product-link" :to="'catalog'+wish.url">
@@ -53,18 +53,18 @@
     margin-right: 7%;
     min-height: 100vh;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
   }
   
   .wish-card-container {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
-    margin: -5px;
-    height: auto;
+    justify-content: center;
+    max-width: 1520px;
 }
 
 .wish-card {
-  width: calc(33.33% - 10px);
   margin: 5px;
   box-sizing: border-box;
   position: relative; 
@@ -74,8 +74,8 @@
   
   .wish-image {
   box-sizing: content-box;
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
+  width: 310px;
+  height: 360px;
   margin: 10px;
   }
 .wish-image-container {

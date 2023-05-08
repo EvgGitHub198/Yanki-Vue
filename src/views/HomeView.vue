@@ -174,19 +174,20 @@ export default {
   justify-content: center;
 }
 
-.category-card {
+.category-card img {
   /* Стили для каждой карточки категории */
   width: 274px;
-  height: 450px;
+  height: 455px;
   position: relative;
+  object-fit: cover;
 }
 
 .category-name  {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  bottom: 1.2px;
+  left: 1.5px;
+  width: 274.5px;
   height: 40px;
   opacity: 0.92;
   background-color: #E0BEA2;
@@ -195,6 +196,7 @@ export default {
   font-style: light;
   line-height: 40px;
   color: white;
+    
 }
 
 .subscribe {

@@ -9,7 +9,7 @@
       <div class="main-image">
         <div class="image-controls">
           <button @click="changeMainImagePrev" class="prev-image-button">&#8249;</button>
-          <img :src="config.BACKEND_URL + currentImage" width="450" height="540" v-if="currentImage" />
+          <img :src="config.BACKEND_URL + currentImage" width="450" height="540" class="main-img" v-if="currentImage" />
           <button @click="changeMainImageNext" class="next-image-button">&#8250;</button>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="additional">  
         <div v-for="(random_product, index) in random_products" :key="random_product.id">
             <router-link :to="'/catalog'+random_product.get_absolute_url" class="product-items" >
-              <img :src="config.BACKEND_URL+random_product.main_image">
+              <img :src="config.BACKEND_URL+random_product.main_image" class="additional-img">
               <div class="product-details">
                 <p class="name">{{ random_product.name }}</p>
                 <p class="price">{{ random_product.price }} руб.</p>
@@ -62,7 +62,7 @@
       <div class="additional">  
         <div v-for="(product, index) in recentProducts" :key="product.id">
             <router-link :to="'/catalog'+product.get_absolute_url" class="product-items" >
-              <img :src="product.main_image">
+              <img :src="product.main_image" class="additional-img">
               <div class="product-details">
                 <p class="name">{{ product.name }}</p>
                 <p class="price">{{ product.price }} руб.</p>
@@ -250,6 +250,15 @@ methods: {
 
 
 <style lang="scss" scoped>
+.additional-img{
+  object-fit: cover;
+  width: 310px;
+  height: 360px;
+
+}
+.main-img{
+  object-fit: cover;
+}
 .product-details p {
   line-height: 0.5;
 }
@@ -286,8 +295,10 @@ methods: {
   color: #000;
 }
 .product-items img {
-  width: 100%;
-  height: auto;
+  width: 275px;
+  height: 320px;
+  object-fit: cover;
+
 
 }
 .product-details {
@@ -318,6 +329,7 @@ methods: {
   margin-left: 10px;
   margin-bottom: 10px;
   cursor: pointer;
+  object-fit: cover;
 }
 
 .image-row {

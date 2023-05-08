@@ -208,6 +208,9 @@ export default {
     .then(response => {
         console.log(response.data);
         this.show = false;
+        setTimeout(function() {
+          location.reload();
+          }, 10);
         })
         .catch(error => {
         console.log(error);
@@ -264,11 +267,6 @@ label {
   flex-direction: column;
   align-items: center;
 }
-
-
-
-
-
 
 .size {
   width: 65px;

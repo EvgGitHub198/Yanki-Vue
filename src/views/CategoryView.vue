@@ -66,7 +66,7 @@
           <router-link :to="'/catalog'+product.get_absolute_url" class="product-items">
             <div class="product-card">
               <div class="product-image">
-                <img :src="config.BACKEND_URL+product.main_image" :alt="product.name" />
+                <img :src="config.BACKEND_URL+product.main_image" :alt="product.name" class="product-img" />
               </div>
               <div class="product-details">
                 <p class="name">{{ product.name }}</p>
@@ -297,6 +297,11 @@
 
   
 <style lang="scss" scoped>
+.product-img {
+  width: 310px;
+  height: 360px;
+  object-fit: cover;
+}
 .product-wish {
   position: relative;
   display: flex;

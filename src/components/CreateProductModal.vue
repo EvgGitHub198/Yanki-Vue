@@ -203,6 +203,9 @@ export default {
     .then(response => {
         console.log(response.data);
         this.show = false;
+        setTimeout(function() {
+          location.reload();
+          }, 10);
         })
         .catch(error => {
         console.log(error);

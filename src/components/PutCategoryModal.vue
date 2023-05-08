@@ -68,6 +68,9 @@ export default {
 methods: {
     closeModal() {
     this.show = false
+    setTimeout(function() {
+          location.reload();
+    }, 10);
     },
     filesSelected(e) {
     this.files = e.target.files

@@ -55,6 +55,9 @@ export default {
         slug: this.categorySlug,
       });
       this.closeModal();
+      setTimeout(function() {
+          location.reload();
+          }, 10);
     },
     filesSelected(e) {
     this.files = e.target.files
