@@ -9,7 +9,6 @@
           </li>
         </ul>
       </div>
-
       <div class="products">
 
       <div class="filters">

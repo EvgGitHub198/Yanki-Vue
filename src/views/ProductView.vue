@@ -1,18 +1,20 @@
 <template>
   <div class="product-page">
     <div class="images-container">
+
       <div class="extra-images">
-      <div class="image-column" v-for="(image, index) in images.slice(1)" :key="index">
-          <img :src="config.BACKEND_URL + image" width="100" height="100" @click="changeMainImage(index + 1)" />
+      <div class="image-column" v-for="(image, index) in images" :key="index">
+        <img :src="config.BACKEND_URL + image" width="100" height="100" @click="changeMainImage(index)" />
       </div>
       </div>
       <div class="main-image">
         <div class="image-controls">
           <button @click="changeMainImagePrev" class="prev-image-button">&#8249;</button>
-          <img :src="config.BACKEND_URL + currentImage" width="450" height="540" class="main-img" v-if="currentImage" />
+          <img :src="config.BACKEND_URL + currentImage" width="500" height="650" class="main-img" v-if="currentImage" />
           <button @click="changeMainImageNext" class="next-image-button">&#8250;</button>
         </div>
       </div>
+
     </div>
     <div class="product-info">
       <h2 class="product-name">{{ product.name }}</h2>
@@ -57,7 +59,7 @@
   </div>
 
 
-  <div class="extra-block">
+  <div class="extra-block" v-if="recentProducts.length>0">
     <h2>Недавно смотрели</h2>
       <div class="additional">  
         <div v-for="(product, index) in recentProducts" :key="product.id">
@@ -320,7 +322,7 @@ methods: {
 .images-container {
   display: flex;
   flex-direction: row;
-  margin-right: 100px;
+  margin-right: 30px;
   }
   
 .extra-images img{

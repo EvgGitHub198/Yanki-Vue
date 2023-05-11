@@ -3,22 +3,22 @@
     <div class="footer-column">
       <h3>КОМПАНИЯ</h3>
       <ul>
-        <li><a href="#">О нас</a></li>
-        <li><a href="#">Контакты</a></li>
+        <li><router-link to="/about">О нас</router-link></li>
+        <li><router-link to="/contacts">Контакты</router-link></li>
       </ul>
     </div>
     <div class="footer-column">
       <h3>ПОЛЕЗНОЕ</h3>
       <ul>
         <li><a href="#">Оплата и доставка</a></li>
-        <li><a href="#">Условия возврата</a></li>
+        <li><router-link to="/return-rules">Обмен и возврат</router-link></li>
         <li><a href="#">Бонусная система</a></li>
       </ul>
     </div>
     <div class="footer-column">
       <h3>ПОКУПАТЕЛЮ</h3>
       <ul>
-        <li><a href="#">Избранное</a></li>
+        <li><router-link to="/wish">Избранное</router-link></li>
         <li><a href="#">Публичная оферта</a></li>
         <li><a href="#">Политика конфиденциальности</a></li>
       </ul>
@@ -27,7 +27,7 @@
       <h3>КОНТАКТЫ</h3>
       <ul>
         <li><a href="#"><img src="@/assets/icons/tg.svg"></a>
-            <a href="#"><img src="@/assets/icons/tg.svg"></a>
+            <a href="#"><img src="@/assets/icons/inst.svg"></a>
         </li>
         <li>+7(912)-312-31-23</li>
         <li>ex@example.com</li>
@@ -36,7 +36,7 @@
     <div class="notification">
     <p class="rights">©️ 2023 Yanki. All rights reserved</p>
   </div>
-    </footer>
+  </footer>
     
 
 </template>

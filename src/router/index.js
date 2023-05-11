@@ -12,6 +12,9 @@ import WishListView from '../views/WishListView.vue'
 import SearchView from '../views/SearchView.vue'
 import SuccessView from '../views/SuccessView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
+import ReturnRulesView from '../views/ReturnRulesView.vue'
+import ContactView from '../views/ContactsView.vue'
+
 
 const routes = [
   {
@@ -54,6 +57,22 @@ const routes = [
     component: ResetPasswordView,
     meta: {
       breadcrumb: 'Восстановление пароля',
+    },
+  },
+  {
+    path: '/return-rules',
+    name: 'return-rules',
+    component: ReturnRulesView,
+    meta: {
+      breadcrumb: 'Обмен и возврат',
+    },
+  },
+  {
+    path: '/contacts',
+    name: 'contacts',
+    component: ContactView,
+    meta: {
+      breadcrumb: 'Контакты',
     },
   },
   {

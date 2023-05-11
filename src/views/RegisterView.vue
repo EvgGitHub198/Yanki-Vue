@@ -6,7 +6,7 @@
                 <form @submit.prevent="submitForm">
                     <div class="username">              
                         <div class="username-input">
-                            <input type="text" class="input" v-model="username" placeholder="Ваше имя*">
+                            <input type="text" class="input" v-model="username" placeholder="Ваш никнейм*">
                         </div>
                     </div>
                     <div class="email">                
@@ -85,8 +85,9 @@ export default {
                     .post("/api/v1/users/", formData)
                     .then(response => {
                         const loginData = {
-                            email: formData.email,
-                            password: formData.password
+                            username: this.username,
+                            email: this.email,
+                            password: this.password
                         }
                         axios
                             .post("/api/v1/token/login/", loginData)

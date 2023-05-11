@@ -41,7 +41,7 @@
     <div class="form-group">
       <div class="name-email-grid">
         <input type="text" id="name" placeholder="Ваше ФИО*"  v-model="name">
-        <input type="email" id="email" placeholder="Ваша почта*" v-model="email">
+        <input type="email" id="email"  placeholder="Ваша почта*" v-model="email">
       </div>
     </div>
     <div class="form-group">
@@ -92,10 +92,10 @@
         </template>
 
         <p><router-link class="delivery-links" to="/delivery">УСЛОВИЯ ДОСТАВКИ</router-link></p>
-        <p><router-link class="delivery-links" to="/return">УСЛОВИЯ ОБМЕНА И ВОЗВРАТА</router-link></p>
+        <p><router-link class="delivery-links" to="/return-rules">УСЛОВИЯ ОБМЕНА И ВОЗВРАТА</router-link></p>
         <p><router-link class="delivery-links" to="/payment">ИНФОРМАЦИЯ ОБ ОПЛАТЕ</router-link></p>
       </div>
-        <table class="checkout-table" >
+        <table class="checkout-table">
         <thead>
             <tr>
                 <th colspan="2"></th>
@@ -157,6 +157,7 @@ export default {
 mounted() {
   this.$store.commit('initializeStore');
   this.showAddress = this.selectedShipping === 'mail';
+  this.init()
 },
 methods: {
     removeItem(index) {
@@ -168,7 +169,20 @@ methods: {
     decrementItem(index) {
         this.$store.commit('decrementItem', index);
       },
-    submitOrder() {
+       async init  () {
+        const {data} =  await axios.get('/api/v1/user-profile')
+        console.log(data)
+        const {email, phone, full_name} = data
+        this.email = email
+        this.phone=  phone
+        this.name = full_name
+        
+      },    
+      submitOrder() {
+       const {items} = JSON.parse(localStorage.getItem("cart"))
+       if (items.length===0) 
+       return 
+      
     this.errors = [];
 
     if (this.name === '') {

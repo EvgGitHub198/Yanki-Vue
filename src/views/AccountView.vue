@@ -1,48 +1,73 @@
 <template >
   <template v-if="!isAdmin">
   <div class="account-page">
-    <h1 class="title">Мой аккаунт</h1>
-    <button @click="logout()" class="tab-btn add-btn">Выйти</button>
-    <div class="box" v-if="orders.length">
-      <h3>История заказов</h3>
-      <div class="orders-table">
-        <div class="order-rows" v-for="(order, index) in orders" :key="order.id">
-          <div class="order-info">
-            <div class="order-id"><strong>№{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div>
-            <div class="order-status">Статус:<br><strong>{{ order.status }}</strong></div>
-            <div class="order-amount">Сумма заказа:<br> <strong>{{ order.paid_amount }} руб.</strong></div>
-            <div class="show-more" @click="toggleOrderInfo(index)">
-              <img src="@/assets/icons/arrow-down.svg" :class="{ 'rotated': orders[index].isRotated }" >
-            </div>
-          </div>
-          <div v-if="order.showInfo" class="orders-info-block"  v-bind:class="{ show: order.showInfo }">
-                <div class="items-table">
-                  <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
-                    <div class="item-info"><img class="order-item-img" :src="config.BACKEND_URL+item.product.main_image"></div>
-                    <div class="item-info"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
-                    <div class="item-info">Размер: {{ item.size }}</div>
-                    <div class="item-info">Количество: {{ item.quantity }}</div>
-                    <div class="item-info"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>
+    <div class="tabs">
+        <button class="tab-btn" @click="changeTab('history')" :class="{ 'active': activeTab === 'history' }">История заказов</button>
+        <button class="tab-btn" @click="changeTab('personal-data')" :class="{ 'active': activeTab === 'personal-data' }">Личные данные</button>
+        <button class="tab-btn" @click="logout()">Выйти</button>
+    </div>
+
+    <div v-show="activeTab === 'history'">
+        <div class="history-container" v-if="orders.length">
+          <div class="orders-table">
+            <div class="order-rows" v-for="(order, index) in orders" :key="order.id">
+              <div class="order-info">
+                <div class="order-id"><strong>№{{ order.id }} от {{ formatDate(order.created_at) }}</strong></div>
+                <div class="order-status">Статус:<br><strong>{{ order.status }}</strong></div>
+                <div class="order-amount">Сумма заказа:<br> <strong>{{ order.paid_amount }} руб.</strong></div>
+                <div class="show-more" @click="toggleOrderInfo(index)">
+                  <img src="@/assets/icons/arrow-down.svg" :class="{ 'rotated': orders[index].isRotated }" >
+                </div>
+              </div>
+              <div v-if="order.showInfo" class="orders-info-block"  v-bind:class="{ show: order.showInfo }">
+                    <div class="items-table">
+                      <div class="items-row" v-for="(item, index) in order.items" :key="item.product.id">
+                        <div class="item-info"><img class="order-item-img" :src="config.BACKEND_URL+item.product.main_image"></div>
+                        <div class="item-info"><span style="color: #E0BEA2; font-size: 14px">арт.{{ item.product.id }}</span><br>{{ item.product.name }}</div>
+                        <div class="item-info">Размер: {{ item.size }}</div>
+                        <div class="item-info">Количество: {{ item.quantity }}</div>
+                        <div class="item-info"><strong>{{ item.product.price*item.quantity }} руб.</strong></div>
+                      </div>
+                    </div>
+                </div>
+                <div class="order-details" v-if="order.showInfo">
+                  <div class="column">
+                    <div class="order-detail"><strong>ФИО: </strong>{{ order.name }}</div>
+                    <div class="order-detail"><strong>Email: </strong>{{ order.email }}</div>
+                    <div class="order-detail"><strong>Телефон: </strong>{{ order.phone }}</div>
+                  </div>
+                  <div class="column">
+                    <div class="order-detail"><strong>Адрес: </strong>{{ order.address }}</div>
+                    <div class="order-detail"><strong>Индекс: </strong>{{ order.zipcode }}</div>
                   </div>
                 </div>
             </div>
-            <div class="order-details" v-if="order.showInfo">
-              <div class="column">
-                <div class="order-detail"><strong>ФИО: </strong>{{ order.name }}</div>
-                <div class="order-detail"><strong>Email: </strong>{{ order.email }}</div>
-                <div class="order-detail"><strong>Телефон: </strong>{{ order.phone }}</div>
-              </div>
-              <div class="column">
-                <div class="order-detail"><strong>Адрес: </strong>{{ order.address }}</div>
-                <div class="order-detail"><strong>Индекс: </strong>{{ order.zipcode }}</div>
-              </div>
-            </div>
+          </div>
         </div>
+        <div v-else>
+          <p>У вас пока нет заказов.</p>
+        </div>
+    </div>
+
+    <div v-show="activeTab === 'personal-data'" style="display: flex; justify-content: center;">
+      <div class="p-data">
+        <span>Персональные данные:</span>
+        <div class="personal-data">
+          <input type="text" class="long-input" v-model="info.full_name" placeholder="ФИО">
+          <input type="text" readonly class="short-input" v-model="info.email" placeholder="E-mail">
+          <input type="text" class="short-input" v-model="info.phone" placeholder="Телефон">
+        </div>
+        <span>Адрес доставки:</span>
+        <div class="address-data">
+          <input type="text" class="long-input" v-model="info.address" placeholder="Адрес">
+          <input type="text" class="long-input" v-model="info.index" placeholder="Индекс">
+        </div>
+        <button class="account-btn" @click="update">ОБНОВИТЬ ИНФОРМАЦИЮ</button>
       </div>
+
     </div>
-    <div v-else>
-      <p>У вас пока нет заказов.</p>
-    </div>
+
+
   </div>
 </template>
 
@@ -254,6 +279,30 @@
 </template>
 
 
+<script setup>
+import {ref} from 'vue'
+const info = ref({
+  full_name: '',
+  index: '',
+  phone: '',
+  address: '',
+  email: ''
+})
+
+let infoResponse 
+const init=async ()=>{
+  infoResponse = (await axios.get('/api/v1/user-profile/')).data
+  info.value = {... info.value,...infoResponse }
+  console.log(infoResponse)
+}
+init()
+
+const update =async  ()=>{
+  await axios.put('/api/v1/user-profile/update/',info.value)
+  window.reload()
+}
+
+</script>
 
 
 <script>
@@ -266,6 +315,8 @@ import BarChart from '@/components/SalesYear.vue'
 import LineChart from '@/components/SalesMonth.vue'
 import LineForecast from '@/components/SalesForecast.vue'
 import { BACKEND_URL } from '@/config.js';
+
+
 
 
 export default {
@@ -350,8 +401,6 @@ async mounted() {
     this.showDetails[index] = !this.showDetails[index];
   },
       logout() {
-      axios.post('/api/v1/token/logout/')
-      .then(response => {
         localStorage.removeItem('token')
         localStorage.removeItem('username')
         localStorage.removeItem('userId')
@@ -362,10 +411,6 @@ async mounted() {
           location.reload();
         }, 10);
 
-      })
-      .catch(error => {
-        console.log(error)
-      })
   },
  async checkIsAdmin() {
     await axios
@@ -566,6 +611,51 @@ async getAllProducts() {
 </script>
 
 <style lang="scss" scoped>
+.history-container{
+  margin-top: 30px;
+}
+.account-btn{
+  height: 50px;
+  background-color: #E0BEA2;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+.p-data input {
+  padding-left: 10px;
+}
+
+.p-data input {
+  border: #888888 1px solid;
+}
+.p-data span {
+  text-align: left;
+}
+.p-data{
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+}
+.personal-data {
+  display: flex;
+  gap: 17px;
+  justify-content: center;
+}
+.address-data {
+  display: flex;
+  gap: 27px;
+  justify-content: center;
+}
+.long-input {
+  width: 560px;
+  height: 50px;
+}
+.short-input {
+  width: 270px;
+  height: 50px;
+}
 .rotated {
   transform: rotate(180deg);
   transition: all 0.3s ease;
@@ -806,18 +896,19 @@ async getAllProducts() {
   height: 50px;
   border: none;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: light;
+
 }
 
 .tab-btn:hover {
-  color: #6e81ff;
   background: #E0BEA2;
   transition: 0.7s;
   
 }
 .tab-btn.active {
   background-color: #E0BEA2;
-  color: #6e81ff;
+  color: white;
+  
 }
 .add-btn {
   display: flex;

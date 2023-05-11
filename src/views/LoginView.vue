@@ -24,7 +24,7 @@
                     </div>  
                     <hr>
                     <p>Или нажмите <router-link to="/register">здесь,</router-link> чтобы <strong>зарегистрироваться</strong></p>
-                    <p>Забыли пароль?<router-link to="/reset-password">Восстановить</router-link></p>
+                    <p>Забыли пароль? <router-link to="/reset-password">Восстановить</router-link></p>
                 </form>
             </div>
         </div>
