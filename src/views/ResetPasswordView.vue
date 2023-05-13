@@ -34,9 +34,6 @@ export default {
           errors: []
       }
   },
-  mounted() {
-      document.title = 'Yanki | Reset password'
-  },
   methods: {
       async submitForm() {
           const formData = {

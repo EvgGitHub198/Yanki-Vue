@@ -37,6 +37,9 @@ export default {
       this.loading = false;
     }
   },
+  mounted() {
+        document.title = 'YANKI'
+    },
   created() {
     this.$store.commit('initializeStore')
     const token = this.$store.state.token
@@ -67,7 +70,25 @@ export default {
 
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+@font-face {
+  font-family: 'Raleway';
+  font-weight: 100;
+  font-style: normal;
+  src: url('@/assets/fonts/static/Raleway-Thin.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-weight: 100;
+  font-style: normal;
+  src: url('@/assets/fonts/static/Raleway-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Raleway';
+  font-weight: 400;
+  font-style: normal;
+  src: url('@/assets/fonts/static/Raleway-Regular.ttf') format('truetype');
+}
 #app {
   font-family: 'Raleway', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -75,6 +96,7 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
 .loading {
   position: fixed;
   top: 0;

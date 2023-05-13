@@ -91,9 +91,9 @@
           <p><router-link class="login-link"  to="/login">Войти в личный кабинет</router-link></p>
         </template>
 
-        <p><router-link class="delivery-links" to="/delivery">УСЛОВИЯ ДОСТАВКИ</router-link></p>
+        <p><a class="delivery-links" href="#">УСЛОВИЯ ДОСТАВКИ</a></p>
         <p><router-link class="delivery-links" to="/return-rules">УСЛОВИЯ ОБМЕНА И ВОЗВРАТА</router-link></p>
-        <p><router-link class="delivery-links" to="/payment">ИНФОРМАЦИЯ ОБ ОПЛАТЕ</router-link></p>
+        <p><a class="delivery-links"  href="#">ИНФОРМАЦИЯ ОБ ОПЛАТЕ</a></p>
       </div>
         <table class="checkout-table">
         <thead>
@@ -284,6 +284,7 @@ watch: {
   text-decoration: underline;
   color: #000;
 }
+
 
 .links, .table-info-left-column {
   text-align: left;

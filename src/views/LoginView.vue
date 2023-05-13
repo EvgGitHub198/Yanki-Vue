@@ -44,9 +44,6 @@ export default {
             errors: []
         }
     },
-    mounted() {
-        document.title = 'Yanki | LogIn'
-    },
 
     methods: {
         async submitForm() {

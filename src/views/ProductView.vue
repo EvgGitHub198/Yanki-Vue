@@ -4,7 +4,8 @@
 
       <div class="extra-images">
       <div class="image-column" v-for="(image, index) in images" :key="index">
-        <img :src="config.BACKEND_URL + image" width="100" height="100" @click="changeMainImage(index)" />
+        <img :src="config.BACKEND_URL + image" width="100" height="100" @click="changeMainImage(index)" 
+        :class="{ selected: index === currentIndex }" />
       </div>
       </div>
       <div class="main-image">
@@ -181,7 +182,6 @@ methods: {
       .get(`api/v1/products/${category_slug}/${product_slug}/`)
       .then(response => {
       this.product = response.data;
-      document.title = 'Yanki | ' + this.product.name;
       this.saveRecentProduct(this.product.id);
       })
       .catch(error => {
@@ -252,6 +252,10 @@ methods: {
 
 
 <style lang="scss" scoped>
+.extra-images .image-column .selected {
+  border: 1.5px solid #E0BEA2;
+  box-sizing: border-box;
+}
 .additional-img{
   object-fit: cover;
   width: 310px;
